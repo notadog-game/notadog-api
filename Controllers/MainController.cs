@@ -13,7 +13,7 @@ namespace NotadogApi.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            return "Notadog API";
+            return "Notadog app API";
         }
     }
 }
