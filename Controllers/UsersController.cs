@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace NotadogApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
