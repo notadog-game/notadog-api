@@ -9,7 +9,7 @@ namespace NotadogApi.Tests
         public void Test1()
         {
             var result = true;
-            Assert.True(result, "result should not be true");
+            Assert.True(result, "result should be true");
         }
     }
 }
