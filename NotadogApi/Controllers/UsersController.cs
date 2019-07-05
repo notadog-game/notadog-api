@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NotadogApi.Domain.Models;
-using NotadogApi.Domain.Services;
 
 namespace NotadogApi.Controllers
 {
@@ -12,18 +10,10 @@ namespace NotadogApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService _userService;
-
-        public UsersController(IUserService userService)
-        {
-            _userService = userService;
-        }
-
         [HttpGet]
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public ActionResult<IEnumerable<string>> Get()
         {
-            var users = await _userService.ListAsync();
-            return users;
+            return new string[] { "user1", "user2" };
         }
     }
 }
