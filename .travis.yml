@@ -5,7 +5,8 @@ branches:
   only:
     - master
 script:
-  - dotnet restore
+  - dotnet build
+  - dotnet test
 deploy:
   provider: heroku
   api_key:
