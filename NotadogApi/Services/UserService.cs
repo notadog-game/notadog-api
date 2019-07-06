@@ -15,9 +15,9 @@ namespace NotadogApi.Services
             this._userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<User>> ListAsync()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
-            return await _userRepository.ListAsync();
+            return await _userRepository.GetAllAsync();
         }
     }
 }

@@ -26,10 +26,6 @@ namespace NotadogApi.Controllers
         /// Get all users.
         /// </summary>  
         [HttpGet]
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            var users = await _userService.ListAsync();
-            return users;
-        }
+        public async Task<IEnumerable<User>> GetAllAsync() => await _userService.GetAllAsync();
     }
 }

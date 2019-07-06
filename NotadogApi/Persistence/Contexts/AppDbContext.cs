@@ -17,14 +17,15 @@ namespace NotadogApi.Persistence.Contexts
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);
             builder.Entity<User>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
-            builder.Entity<User>().Property(p => p.Name).IsRequired().HasMaxLength(30);
+            builder.Entity<User>().HasIndex(e => e.Email).IsUnique();
             builder.Entity<User>().Property(p => p.Email).IsRequired();
+            builder.Entity<User>().Property(p => p.Name).IsRequired().HasMaxLength(30);
             builder.Entity<User>().Property(p => p.Password).IsRequired();
 
             builder.Entity<User>().HasData
             (
-                new User { Id = 100, Email = "UserEmail1", Name = "UserName1", Password = "UserPassword1", Points = 0 },
-                new User { Id = 101, Email = "UserEmail2", Name = "UserName2", Password = "UserPassword2", Points = 0 }
+                new User { Id = 100, Email = "UserEmail1", Name = "UserName1", Password = "UserPassword1", Score = 0 },
+                new User { Id = 101, Email = "UserEmail2", Name = "UserName2", Password = "UserPassword2", Score = 0 }
             );
         }
     }
