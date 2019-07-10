@@ -13,9 +13,8 @@ namespace NotadogApi.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            return await _context.Users.ToListAsync();
-        }
+        public async Task<IEnumerable<User>> GetAllAsync() => await _context.Users.ToListAsync();
+        public async Task<User> GetOneAsync(int id) => await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+        public async Task<User> GetOneByEmailAsync(string email) => await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
     }
 }

@@ -7,5 +7,7 @@ namespace NotadogApi.Domain.Services
     public interface IUserService
     {
         Task<IEnumerable<User>> GetAllAsync();
+        Task<User> GetOneAsync(int id);
+        Task<User> GetOneByEmailAsync(string email);
     }
 }
