@@ -6,7 +6,7 @@ namespace NotadogApi.Domain.Repositories
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAllAsync();
+        Task<List<User>> GetAllAsync();
         Task<User> GetOneAsync(int id);
         Task<User> GetOneByEmailAsync(string email);
     }

@@ -15,7 +15,7 @@ namespace NotadogApi.Services
             this._userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync() => await _userRepository.GetAllAsync();
+        public async Task<List<User>> GetAllAsync() => await _userRepository.GetAllAsync();
         public async Task<User> GetOneAsync(int id) => await _userRepository.GetOneAsync(id);
         public async Task<User> GetOneByEmailAsync(string email) => await _userRepository.GetOneByEmailAsync(email);
     }

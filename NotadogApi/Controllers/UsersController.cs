@@ -32,7 +32,7 @@ namespace NotadogApi.Controllers
         /// Get all users.
         /// </summary>  
         [HttpGet]
-        public async Task<IEnumerable<User>> GetAllAsync() => await _userService.GetAllAsync();
+        public async Task<List<User>> GetAllAsync() => await _userService.GetAllAsync();
 
         /// <summary>
         /// Get authentification token.
@@ -40,7 +40,6 @@ namespace NotadogApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserCredentials credentials)
         {
-
             var user = await _userService.GetOneByEmailAsync(credentials.Email);
 
             if (user == null)
@@ -48,15 +47,13 @@ namespace NotadogApi.Controllers
                 return BadRequest(HttpStatusCode.Forbidden);
             }
 
-            if (!user.Password.SequenceEqual(credentials.Password))
+            if (user.Password != credentials.Password)
             {
                 return BadRequest(HttpStatusCode.Forbidden);
             }
 
             var Token = await _jwtTokenGenerator.CreateToken(user.Id);
-
             return Ok(Token);
-
         }
     }
 
