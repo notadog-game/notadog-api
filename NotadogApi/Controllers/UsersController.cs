@@ -44,12 +44,12 @@ namespace NotadogApi.Controllers
 
             if (user == null)
             {
-                return BadRequest(HttpStatusCode.Forbidden);
+                return NotFound();
             }
 
             if (user.Password != credentials.Password)
             {
-                return BadRequest(HttpStatusCode.Forbidden);
+                return Unauthorized();
             }
 
             var Token = await _jwtTokenGenerator.CreateToken(user.Id);
