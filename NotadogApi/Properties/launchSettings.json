@@ -17,11 +17,13 @@
     },
     "NotadogApi": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PORT": "5000"
+        "JWT_SECRET": "somethinglongerforthisdumbalgorithmisrequired",
+        "JWT_ISSUER": "issuer",
+        "JWT_AUDIENCE": "audience"
       }
     }
   }
