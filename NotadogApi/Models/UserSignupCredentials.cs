@@ -3,10 +3,8 @@ using System.Runtime.Serialization;
 
 namespace NotadogApi.Models
 {
-    public class UserSignupCredentials
+    public class UserSignupCredentials : UserLoginCredentials
     {
-        public string Email { get; set; }
         public string Name { get; set; }
-        public string Password { get; set; }
     }
 }
