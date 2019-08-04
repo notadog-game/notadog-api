@@ -21,7 +21,7 @@ namespace NotadogApi.Persistence.Contexts
             builder.Entity<User>().Property(p => p.Email).IsRequired();
             builder.Entity<User>().Property(p => p.Name).IsRequired().HasMaxLength(30);
             builder.Entity<User>().Property(p => p.Password).IsRequired();
-            builder.Entity<User>().Property(p => p.Score).HasDefaultValue(0);
+            builder.Entity<User>().Property(p => p.Score);
 
 
             builder.Entity<User>().HasData
