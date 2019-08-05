@@ -38,22 +38,33 @@ namespace NotadogApi.Controllers
         /// Get authentification token.
         /// </summary>  
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserCredentials credentials)
+        public async Task<IActionResult> Login(UserLoginCredentials credentials)
         {
             var user = await _userService.GetOneByEmailAsync(credentials.Email);
 
             if (user == null)
             {
-                return BadRequest(HttpStatusCode.Forbidden);
+                return NotFound();
             }
 
             if (user.Password != credentials.Password)
             {
-                return BadRequest(HttpStatusCode.Forbidden);
+                return Unauthorized();
             }
 
-            var Token = await _jwtTokenGenerator.CreateToken(user.Id);
-            return Ok(Token);
+            var token = await _jwtTokenGenerator.CreateToken(user.Id);
+            return Ok(token);
+        }
+
+        /// <summary>
+        /// Get authentification t.
+        /// </summary>  
+        [HttpPost("signup")]
+        public async Task<IActionResult> Signup(UserSignupCredentials credentials)
+        {
+            var user = await _userService.CreateAsync(credentials.Name, credentials.Email, credentials.Password);
+            var token = await _jwtTokenGenerator.CreateToken(user.Id);
+            return Ok(token);
         }
     }
 
