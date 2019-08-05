@@ -62,16 +62,9 @@ namespace NotadogApi.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup(UserSignupCredentials credentials)
         {
-            try
-            {
-                var user = await _userService.CreateAsync(credentials.Name, credentials.Email, credentials.Password);
-                var token = await _jwtTokenGenerator.CreateToken(user.Id);
-                return Ok(token);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            var user = await _userService.CreateAsync(credentials.Name, credentials.Email, credentials.Password);
+            var token = await _jwtTokenGenerator.CreateToken(user.Id);
+            return Ok(token);
         }
     }
 
