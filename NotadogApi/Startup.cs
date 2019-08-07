@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Http;
+
 
 using NotadogApi.Domain.Repositories;
 using NotadogApi.Domain.Services;
@@ -15,6 +18,7 @@ using NotadogApi.Persistence.Contexts;
 using NotadogApi.Persistence.Repositories;
 using NotadogApi.Services;
 using NotadogApi.Security;
+using NotadogApi.Infrastructure;
 
 namespace NotadogApi
 {
@@ -38,6 +42,8 @@ namespace NotadogApi
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddJwt();
         }
