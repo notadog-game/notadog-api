@@ -19,7 +19,7 @@ namespace NotadogApi.Security
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                 new Claim(JwtRegisteredClaimNames.Iat,
                     new DateTimeOffset(_jwtOptions.IssuedAt).ToUnixTimeSeconds().ToString(),

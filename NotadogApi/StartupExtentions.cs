@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NotadogApi.Security;
+using Microsoft.AspNetCore.Http;
 
 namespace NotadogApi
 {
@@ -51,9 +52,9 @@ namespace NotadogApi
                         OnMessageReceived = (context) =>
                         {
                             var token = context.HttpContext.Request.Headers["Authorization"];
-                            if (token.Count > 0 && token[0].StartsWith("Token ", StringComparison.OrdinalIgnoreCase))
+                            if (token.Count > 0 && token[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                             {
-                                context.Token = token[0].Substring("Token ".Length).Trim();
+                                context.Token = token[0].Substring("Bearer ".Length).Trim();
                             }
 
                             return Task.CompletedTask;

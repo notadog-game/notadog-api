@@ -10,5 +10,6 @@ namespace NotadogApi.Domain.Services
         Task<List<User>> GetAllAsync();
         Task<User> GetOneAsync(int id);
         Task<User> GetOneByEmailAsync(string email);
+        Task UpdateOneAsync(int id, UserUpdatePayload user);
     }
 }

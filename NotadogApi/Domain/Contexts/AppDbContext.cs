@@ -26,8 +26,8 @@ namespace NotadogApi.Persistence.Contexts
 
             builder.Entity<User>().HasData
             (
-                new User { Id = 100, Email = "UserEmail1", Name = "UserName1", Password = "UserPassword1" },
-                new User { Id = 101, Email = "UserEmail2", Name = "UserName2", Password = "UserPassword2" }
+                new User { Id = 1, Email = "user1", Name = "user1", Password = "user1" },
+                new User { Id = 12, Email = "user2", Name = "user2", Password = "user2" }
             );
         }
     }
