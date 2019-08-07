@@ -17,8 +17,8 @@ namespace NotadogApi.Infrastructure
 
         public int GetCurrentId()
         {
-            return Int32
-                .Parse(
+            return
+                Int32.Parse(
                     _httpContextAccessor
                     .HttpContext
                     .User?
