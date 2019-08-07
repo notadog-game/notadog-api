@@ -17,15 +17,14 @@ namespace NotadogApi.Infrastructure
 
         public int GetCurrentId()
         {
-            return
-                Int32.Parse(
-                    _httpContextAccessor
+            return Int32.Parse(
+                _httpContextAccessor
                     .HttpContext
                     .User?
                     .Claims?
                     .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
                     .Value
-                );
+            );
         }
     }
 }
