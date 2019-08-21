@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,7 @@ using NotadogApi.Persistence.Repositories;
 using NotadogApi.Services;
 using NotadogApi.Security;
 using NotadogApi.Infrastructure;
+using NotadogApi.Hubs;
 
 namespace NotadogApi
 {
@@ -50,6 +52,15 @@ namespace NotadogApi
                 }});
             });
 
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                    .WithOrigins(Environment.GetEnvironmentVariable("ALLOWED_ORIGINS"))
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }));
+
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("notadog-api-in-memory"));
 
             services.AddScoped<IUserRepository, UserRepository>();
@@ -59,6 +70,7 @@ namespace NotadogApi
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddJwt();
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,14 +88,14 @@ namespace NotadogApi
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
-            app.UseCors(builder =>
-            builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
-
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseCors("CorsPolicy");
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<GameHub>("/api/v1/gameHub");
+            });
+
             app.UseMvc();
         }
     }
