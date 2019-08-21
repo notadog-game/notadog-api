@@ -23,7 +23,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_SECRET": "somethinglongerforthisdumbalgorithmisrequired",
         "JWT_ISSUER": "issuer",
-        "JWT_AUDIENCE": "audience"
+        "JWT_AUDIENCE": "audience",
+        "ALLOWED_ORIGINS": "http://localhost:8080"
       }
     }
   }
