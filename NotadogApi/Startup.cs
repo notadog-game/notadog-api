@@ -93,7 +93,7 @@ namespace NotadogApi
             app.UseCors("CorsPolicy");
             app.UseSignalR(routes =>
             {
-                routes.MapHub<GameHub>("/gameHub");
+                routes.MapHub<GameHub>("/api/v1/gameHub");
             });
 
             app.UseMvc();
