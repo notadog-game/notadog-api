@@ -51,10 +51,17 @@ namespace NotadogApi
                     {
                         OnMessageReceived = (context) =>
                         {
-                            var token = context.HttpContext.Request.Headers["Authorization"];
-                            if (token.Count > 0 && token[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            var tokenFromHeader = context.HttpContext.Request.Headers["Authorization"];
+                            var tokenFromQuery = context.Request.Query["access_token"];
+
+                            if (tokenFromHeader.Count > 0 && tokenFromHeader[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                             {
-                                context.Token = token[0].Substring("Bearer ".Length).Trim();
+                                context.Token = tokenFromHeader[0].Substring("Bearer ".Length).Trim();
+                            }
+
+                            else if (tokenFromQuery.Count > 0 && tokenFromQuery[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = tokenFromQuery[0].Substring("Bearer ".Length).Trim();
                             }
 
                             return Task.CompletedTask;
