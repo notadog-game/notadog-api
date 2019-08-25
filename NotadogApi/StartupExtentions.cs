@@ -1,12 +1,13 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
 using NotadogApi.Security;
-using Microsoft.AspNetCore.Http;
 
 namespace NotadogApi
 {
@@ -51,11 +52,13 @@ namespace NotadogApi
                     {
                         OnMessageReceived = (context) =>
                         {
-                            var token = context.HttpContext.Request.Headers["Authorization"];
-                            if (token.Count > 0 && token[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                context.Token = token[0].Substring("Bearer ".Length).Trim();
-                            }
+                            var TOKEN_PREFIX = "Bearer ";
+
+                            context.Token = context.HttpContext.Request.Headers["Authorization"]
+                                .Concat(context.Request.Query["access_token"])
+                                .FirstOrDefault(v => v.StartsWith(TOKEN_PREFIX, StringComparison.OrdinalIgnoreCase))?
+                                .Substring(TOKEN_PREFIX.Length)
+                                .Trim();
 
                             return Task.CompletedTask;
                         }
