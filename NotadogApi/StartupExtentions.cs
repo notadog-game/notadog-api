@@ -1,12 +1,13 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+
 using NotadogApi.Security;
-using Microsoft.AspNetCore.Http;
 
 namespace NotadogApi
 {
@@ -51,18 +52,13 @@ namespace NotadogApi
                     {
                         OnMessageReceived = (context) =>
                         {
-                            var tokenFromHeader = context.HttpContext.Request.Headers["Authorization"];
-                            var tokenFromQuery = context.Request.Query["access_token"];
+                            var TOKEN_PREFIX = "Bearer ";
 
-                            if (tokenFromHeader.Count > 0 && tokenFromHeader[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                context.Token = tokenFromHeader[0].Substring("Bearer ".Length).Trim();
-                            }
-
-                            else if (tokenFromQuery.Count > 0 && tokenFromQuery[0].StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                context.Token = tokenFromQuery[0].Substring("Bearer ".Length).Trim();
-                            }
+                            context.Token = context.HttpContext.Request.Headers["Authorization"]
+                                .Concat(context.Request.Query["access_token"])
+                                .FirstOrDefault(v => v.StartsWith(TOKEN_PREFIX, StringComparison.OrdinalIgnoreCase))?
+                                .Substring(TOKEN_PREFIX.Length)
+                                .Trim();
 
                             return Task.CompletedTask;
                         }
