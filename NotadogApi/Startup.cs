@@ -14,7 +14,8 @@ using NotadogApi.Domain.Contexts;
 using NotadogApi.Services;
 using NotadogApi.Security;
 using NotadogApi.Infrastructure;
-using NotadogApi.Hubs;
+// using NotadogApi.Hubs;
+// using NotadogApi.Domain.Game;
 
 namespace NotadogApi
 {
@@ -67,6 +68,7 @@ namespace NotadogApi
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // services.AddSingleton<IRoomStorage, RoomStorage>();
 
             services.AddJwt();
             services.AddSignalR();
@@ -90,10 +92,10 @@ namespace NotadogApi
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<GameHub>("/api/v1/gameHub");
-            });
+            // app.UseSignalR(routes =>
+            // {
+            //     routes.MapHub<GameHub>("/api/v1/gameHub");
+            // });
 
             app.UseMvc();
         }
