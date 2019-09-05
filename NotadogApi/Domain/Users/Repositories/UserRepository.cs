@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NotadogApi.Domain.Models;
-using NotadogApi.Domain.Repositories;
-using NotadogApi.Persistence.Contexts;
 
-namespace NotadogApi.Persistence.Repositories
+using NotadogApi.Domain.Users.Models;
+using NotadogApi.Domain.Repositories;
+using NotadogApi.Domain.Contexts;
+
+namespace NotadogApi.Domain.Users.Repositories
 {
     public class UserRepository : BaseRepository, IUserRepository
     {

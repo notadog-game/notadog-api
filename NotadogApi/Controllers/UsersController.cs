@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
 using NotadogApi.Models;
 using NotadogApi.Security;
-using NotadogApi.Domain.Models;
-using NotadogApi.Domain.Services;
+using NotadogApi.Domain.Users.Models;
+using NotadogApi.Domain.Users.Services;
 
 namespace NotadogApi.Controllers
 {

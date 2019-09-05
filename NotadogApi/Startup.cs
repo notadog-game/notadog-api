@@ -8,10 +8,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 
-using NotadogApi.Domain.Repositories;
-using NotadogApi.Domain.Services;
-using NotadogApi.Persistence.Contexts;
-using NotadogApi.Persistence.Repositories;
+using NotadogApi.Domain.Users.Repositories;
+using NotadogApi.Domain.Users.Services;
+using NotadogApi.Domain.Contexts;
 using NotadogApi.Services;
 using NotadogApi.Security;
 using NotadogApi.Infrastructure;

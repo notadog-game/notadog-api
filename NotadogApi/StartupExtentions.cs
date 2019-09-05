@@ -40,7 +40,7 @@ namespace NotadogApi
                 ValidateAudience = true,
                 ValidAudience = audience,
 
-                ValidateLifetime = true,
+                ValidateLifetime = false,
                 ClockSkew = TimeSpan.Zero
             };
 

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NotadogApi.Domain.Models;
-using NotadogApi.Domain.Services;
-using NotadogApi.Domain.Repositories;
+
+using NotadogApi.Domain.Users.Models;
+using NotadogApi.Domain.Users.Services;
+using NotadogApi.Domain.Users.Repositories;
 
 namespace NotadogApi.Services
 {
