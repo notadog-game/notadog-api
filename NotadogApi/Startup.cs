@@ -14,7 +14,7 @@ using NotadogApi.Domain.Contexts;
 using NotadogApi.Services;
 using NotadogApi.Security;
 using NotadogApi.Infrastructure;
-// using NotadogApi.Hubs;
+using NotadogApi.Hubs;
 // using NotadogApi.Domain.Game;
 
 namespace NotadogApi
@@ -28,7 +28,6 @@ namespace NotadogApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -74,7 +73,6 @@ namespace NotadogApi
             services.AddSignalR();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -92,10 +90,10 @@ namespace NotadogApi
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
-            // app.UseSignalR(routes =>
-            // {
-            //     routes.MapHub<GameHub>("/api/v1/gameHub");
-            // });
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<GameHub>("/api/v1/gameHub");
+            });
 
             app.UseMvc();
         }

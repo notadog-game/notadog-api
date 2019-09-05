@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-using NotadogApi.Domain.Services;
+using NotadogApi.Domain.Users.Services;
 using NotadogApi.Infrastructure;
 
 namespace NotadogApi.Hubs
