@@ -1,6 +1,6 @@
-using NotadogApi.Persistence.Contexts;
+using NotadogApi.Domain.Contexts;
 
-namespace NotadogApi.Persistence.Repositories
+namespace NotadogApi.Domain.Repositories
 {
     public abstract class BaseRepository
     {

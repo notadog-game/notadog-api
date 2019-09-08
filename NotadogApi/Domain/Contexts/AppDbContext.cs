@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using NotadogApi.Domain.Models;
+using NotadogApi.Domain.Users.Models;
 
 
-namespace NotadogApi.Persistence.Contexts
+namespace NotadogApi.Domain.Contexts
 {
     public class AppDbContext : DbContext
     {

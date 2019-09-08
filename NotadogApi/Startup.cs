@@ -8,14 +8,14 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 
-using NotadogApi.Domain.Repositories;
-using NotadogApi.Domain.Services;
-using NotadogApi.Persistence.Contexts;
-using NotadogApi.Persistence.Repositories;
+using NotadogApi.Domain.Users.Repositories;
+using NotadogApi.Domain.Users.Services;
+using NotadogApi.Domain.Contexts;
 using NotadogApi.Services;
 using NotadogApi.Security;
 using NotadogApi.Infrastructure;
 using NotadogApi.Hubs;
+// using NotadogApi.Domain.Game;
 
 namespace NotadogApi
 {
@@ -28,7 +28,6 @@ namespace NotadogApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -68,12 +67,12 @@ namespace NotadogApi
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // services.AddSingleton<IRoomStorage, RoomStorage>();
 
             services.AddJwt();
             services.AddSignalR();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())

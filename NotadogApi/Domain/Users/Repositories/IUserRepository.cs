@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NotadogApi.Domain.Models;
+using NotadogApi.Domain.Users.Models;
 
-namespace NotadogApi.Domain.Services
+namespace NotadogApi.Domain.Users.Repositories
 {
-    public interface IUserService
+    public interface IUserRepository
     {
         Task<User> CreateAsync(string name, string email, string password);
         Task<List<User>> GetAllAsync();
         Task<User> GetOneAsync(int id);
         Task<User> GetOneByEmailAsync(string email);
-        Task UpdateOneAsync(int id, UserUpdatePayload user);
+        Task UpdateOneAsync(User user);
     }
 }
