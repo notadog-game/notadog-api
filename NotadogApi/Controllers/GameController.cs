@@ -1,14 +1,17 @@
 using System;
 using System.Threading.Tasks;
+using System.Linq;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 using NotadogApi.Security;
 using NotadogApi.Structures;
 using NotadogApi.Domain.Users.Services;
 using NotadogApi.Infrastructure;
 using NotadogApi.Domain.Game;
-
+using NotadogApi.Hubs;
 
 namespace NotadogApi.Controllers
 {
@@ -23,7 +26,6 @@ namespace NotadogApi.Controllers
         private readonly IUserService _userService;
         private readonly ICurrentUserAccessor _currentUserAccessor;
         private readonly IRoomStorage _roomStorage;
-
         public GameController(IUserService userService, ICurrentUserAccessor currentUserAccessor, IRoomStorage roomStorage)
         {
             _userService = userService;
@@ -35,10 +37,10 @@ namespace NotadogApi.Controllers
         /// Create game.
         /// </summary>  
         [HttpPost]
-        public async Task<IActionResult> PostAsync(int playersMaxCount, Boolean forceAdding)
+        public async Task<IActionResult> PostAsync(Boolean forceAdding)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var newRoom = new Room(playersMaxCount);
+            var newRoom = new Room();
             var room = await _roomStorage.AddUserToRoom(user, newRoom, forceAdding);
 
             if (room == null) return NotFound();

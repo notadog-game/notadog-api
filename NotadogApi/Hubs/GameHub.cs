@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -37,9 +36,7 @@ namespace NotadogApi.Hubs
             }
 
             room.handleUserNotADogAction(user);
-
             await Clients.Users(room.getPlayers().Select(u => $"{u.Id}").ToList()).SendAsync("OnMakedMove");
-
         }
 
         public override async Task OnConnectedAsync()

@@ -7,6 +7,7 @@ namespace NotadogApi.Domain.Game
 {
     public interface IRoomStorage
     {
+        event EventHandler<RoomChangedEventArgs> Changed;
         Task<Room> AddUserToRoom(User user, Room room, Boolean forceAdding);
         Task<Room> AddUserToAvailableRoom(User user, Boolean forceAdding);
         Task<Room> GetRoomByUserId(int userId);

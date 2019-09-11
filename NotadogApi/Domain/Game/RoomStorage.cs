@@ -9,11 +9,11 @@ namespace NotadogApi.Domain.Game
 {
     struct RoomKey
     {
-        public int MaxPlayersCount;
+        public string Guid;
 
-        public RoomKey(int maxPlayersCount)
+        public RoomKey(string guid)
         {
-            MaxPlayersCount = maxPlayersCount;
+            Guid = guid;
         }
     }
 
@@ -21,6 +21,13 @@ namespace NotadogApi.Domain.Game
     {
         private ConcurrentDictionary<RoomKey, Room> _publicRooms;
         private ConcurrentDictionary<string, Room> _userRoomMap;
+        public event EventHandler<RoomChangedEventArgs> Changed;
+
+        protected virtual void OnChanged(RoomChangedEventArgs e)
+        {
+            EventHandler<RoomChangedEventArgs> handler = Changed;
+            if (handler != null) handler(this, e);
+        }
 
         public RoomStorage()
         {
@@ -67,35 +74,70 @@ namespace NotadogApi.Domain.Game
             var availableRoom = _publicRooms.FirstOrDefault().Value;
             if (availableRoom != null) return await AddUserToRoom(user, availableRoom, forceAdding);
 
-            var newRoom = new Room(3);
-            var newRoomKey = new RoomKey(newRoom.getPlayersMaxCount());
-
-            if (!_publicRooms.TryAdd(newRoomKey, newRoom))
-            {
-                /* TODO: Throw error */
-                return null;
-            }
-
+            var newRoom = CreateRoom(_publicRooms);
             return await AddUserToRoom(user, newRoom, forceAdding);
-        }
-
-        public async Task<Room> GetRoomByUserId(int userId)
-        {
-            var key = _userRoomMap.Keys.FirstOrDefault(k => k == userId.ToString());
-            if (key == null) return null;
-
-            Room room;
-            if (_userRoomMap.TryGetValue(key, out room)) return room;
-
-            return null;
         }
 
         public async Task<Room> RemoveUserFromRoom(User user)
         {
             var existingUserRoom = await GetRoomByUserId(user.Id);
-            if (existingUserRoom != null) existingUserRoom.removePlayer(user);
+            existingUserRoom.removePlayer(user);
 
-            return existingUserRoom;
+            Room room;
+            _userRoomMap.TryRemove(user.Id.ToString(), out room);
+
+            return room;
+        }
+
+        public Task<Room> GetRoomByUserId(int userId)
+        {
+            var key = _userRoomMap.Keys.FirstOrDefault(k => k == userId.ToString());
+            if (key == null) return Task.FromResult<Room>(null);
+
+            Room room;
+            if (_userRoomMap.TryGetValue(key, out room)) return Task.FromResult(room);
+
+            return Task.FromResult<Room>(null);
+        }
+
+        private Room CreateRoom(ConcurrentDictionary<RoomKey, Room> storage)
+        {
+            var room = new Room();
+            var roomKey = new RoomKey(room.getGuid());
+
+            if (!storage.TryAdd(roomKey, room))
+            {
+                /* TODO: Throw error */
+                return null;
+            }
+
+            room.Changed += HandleRoomChanged;
+            return room;
+        }
+
+        private Room RemoveRoom(Room room, ConcurrentDictionary<RoomKey, Room> storage)
+        {
+            var roomKey = new RoomKey(room.getGuid());
+
+            Room outRoom;
+            if (!storage.TryRemove(roomKey, out outRoom))
+            {
+                /* TODO: Throw error */
+                return null;
+            }
+
+            foreach (var user in outRoom.getPlayers())
+            {
+                _userRoomMap.TryRemove(user.Id.ToString(), out _);
+            };
+
+            room.Changed += HandleRoomChanged;
+            return outRoom;
+        }
+
+        private void HandleRoomChanged(object sender, RoomChangedEventArgs e)
+        {
+            OnChanged(new RoomChangedEventArgs(e.room));
         }
     }
 }

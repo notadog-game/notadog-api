@@ -68,9 +68,12 @@ namespace NotadogApi
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IRoomStorage, RoomStorage>();
+            services.AddSingleton<GameHubBroadcast>();
 
             services.AddJwt();
             services.AddSignalR();
+
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -90,6 +93,10 @@ namespace NotadogApi
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
+
+            var gameHubBroadcast = app.ApplicationServices.GetService<GameHubBroadcast>();
+            gameHubBroadcast.AssignEventHadlers();
+
             app.UseSignalR(routes =>
             {
                 routes.MapHub<GameHub>("/api/v1/gameHub");
