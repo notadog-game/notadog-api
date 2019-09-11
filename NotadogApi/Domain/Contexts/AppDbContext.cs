@@ -27,7 +27,8 @@ namespace NotadogApi.Domain.Contexts
             builder.Entity<User>().HasData
             (
                 new User { Id = 1, Email = "user1", Name = "user1", Password = "user1" },
-                new User { Id = 12, Email = "user2", Name = "user2", Password = "user2" }
+                new User { Id = 2, Email = "user2", Name = "user2", Password = "user2" },
+                new User { Id = 3, Email = "user3", Name = "user3", Password = "user3" }
             );
         }
     }
