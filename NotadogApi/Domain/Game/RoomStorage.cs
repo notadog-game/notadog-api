@@ -57,7 +57,7 @@ namespace NotadogApi.Domain.Game
             var availableRoom = _publicRooms.FirstOrDefault().Value;
             if (availableRoom != null) return await AddUserToRoom(user, availableRoom, forceAdding);
 
-            var newRoom = new Room();
+            var newRoom = new Room(2);
 
             var roomKey = new PublicRoomKey(newRoom);
             _publicRooms.TryAdd(roomKey, newRoom);
@@ -68,9 +68,10 @@ namespace NotadogApi.Domain.Game
 
         public async Task<Room> CreatePrivateRoom(User user, Boolean forceAdding)
         {
-            var newRoom = new Room();
+            var newRoom = new Room(0);
             var room = await AddUserToRoom(user, newRoom, forceAdding);
-            _privateRooms.TryAdd(room.Guid, room);
+            _privateRooms.TryAdd(room.Guid, newRoom);
+            room.RootId = user.Id;
             room.Changed += HandleRoomChanged;
 
             return room;
@@ -112,7 +113,19 @@ namespace NotadogApi.Domain.Game
         private void HandleRoomChanged(object sender, RoomChangedEventArgs e)
         {
             OnChanged(new RoomChangedEventArgs(e.room));
-            if (e.room.getStateCode() == nameof(EndState)) RemoveRoom(e.room); ;
+
+            switch (e.room.getStateCode())
+            {
+                case nameof(WaitingStartState):
+                    _publicRooms.TryRemove(new PublicRoomKey(e.room), out _);
+                    _privateRooms.TryRemove(e.room.Guid, out _);
+                    break;
+                case nameof(EndState):
+                    RemoveRoom(e.room);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

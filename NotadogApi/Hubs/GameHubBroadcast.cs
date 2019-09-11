@@ -23,13 +23,13 @@ namespace NotadogApi.Hubs
             _roomStorage.Changed += HandleRoomStorageChanged;
         }
 
-        private void HandleRoomStorageChanged(object sender, RoomChangedEventArgs e)
+        private async void HandleRoomStorageChanged(object sender, RoomChangedEventArgs e)
         {
             var room = e.room;
             var players = room.Players;
             var playerIds = players.Select(p => $"{p.Id}").ToList();
 
-            _hubContext.Clients.Users(playerIds).SendAsync("OnRoomUpdate", new RoomPayload(room));
+            await _hubContext.Clients.Users(playerIds).SendAsync("OnRoomUpdate", new RoomPayload(room));
         }
     }
 }

@@ -19,9 +19,7 @@ namespace NotadogApi.Domain.Game.States
             return nameof(WaitingStartState);
         }
 
-        public void handleUserNotADogAction(User user)
-        {
-        }
+        public void handleUserNotADogAction(User user) { }
     }
 }
 
