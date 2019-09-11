@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using NotadogApi.Domain.Users.Models;
@@ -7,17 +8,17 @@ namespace NotadogApi.Structures
 {
     struct RoomPayload
     {
-        public string Guid;
-        public string StateCode;
+        public Guid Guid;
         public int PlayersMaxCount;
         public IEnumerable<User> Players;
+        public string StateCode;
 
         public RoomPayload(Room room)
         {
-            Guid = room.getGuid();
+            Guid = room.Guid;
+            PlayersMaxCount = room.PlayersMaxCount;
+            Players = room.Players;
             StateCode = room.getStateCode();
-            PlayersMaxCount = room.getPlayersMaxCount();
-            Players = room.getPlayers();
         }
     }
 }

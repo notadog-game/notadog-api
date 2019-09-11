@@ -1,27 +1,37 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 
 using NotadogApi.Domain.Users.Models;
+using NotadogApi.Domain.Game.States;
 
 namespace NotadogApi.Domain.Game
 {
-    struct RoomKey
+    struct PublicRoomKey
     {
-        public string Guid;
+        public int PlayersMaxCount;
 
-        public RoomKey(string guid)
+        public PublicRoomKey(Room room)
         {
-            Guid = guid;
+            PlayersMaxCount = room.PlayersMaxCount;
         }
     }
 
     public class RoomStorage : IRoomStorage
     {
-        private ConcurrentDictionary<RoomKey, Room> _publicRooms;
-        private ConcurrentDictionary<string, Room> _userRoomMap;
+        private ConcurrentDictionary<Guid, Room> _privateRooms;
+        private ConcurrentDictionary<PublicRoomKey, Room> _publicRooms;
+        private ConcurrentDictionary<int, Room> _userRoomMap;
         public event EventHandler<RoomChangedEventArgs> Changed;
+
+        public RoomStorage()
+        {
+            _privateRooms = new ConcurrentDictionary<Guid, Room>();
+            _publicRooms = new ConcurrentDictionary<PublicRoomKey, Room>();
+            _userRoomMap = new ConcurrentDictionary<int, Room>();
+        }
 
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {
@@ -29,115 +39,80 @@ namespace NotadogApi.Domain.Game
             if (handler != null) handler(this, e);
         }
 
-        public RoomStorage()
-        {
-            _publicRooms = new ConcurrentDictionary<RoomKey, Room>();
-            _userRoomMap = new ConcurrentDictionary<string, Room>();
-        }
-
         public async Task<Room> AddUserToRoom(User user, Room room, Boolean forceAdding)
         {
             var existingUserRoom = await GetRoomByUserId(user.Id);
-            if (existingUserRoom != null)
-            {
-                if (!forceAdding)
-                {
-                    return null;
-                }
-                else
-                {
-                    existingUserRoom.removePlayer(user);
-                }
-            }
+            // TODO: Create typed exception
+            if (existingUserRoom != null && !forceAdding) throw new Exception("");
+            existingUserRoom?.removePlayer(user);
 
             room.addPlayer(user);
-            _userRoomMap.AddOrUpdate(user.Id.ToString(), room, (k, v) => v);
+            _userRoomMap.AddOrUpdate(user.Id, room, (k, v) => v);
 
             return room;
         }
 
         public async Task<Room> AddUserToAvailableRoom(User user, Boolean forceAdding)
         {
-            var existingUserRoom = await GetRoomByUserId(user.Id);
-            if (existingUserRoom != null)
-            {
-                if (!forceAdding)
-                {
-                    return null;
-                }
-                else
-                {
-                    existingUserRoom.removePlayer(user);
-                }
-            }
-
             var availableRoom = _publicRooms.FirstOrDefault().Value;
             if (availableRoom != null) return await AddUserToRoom(user, availableRoom, forceAdding);
 
-            var newRoom = CreateRoom(_publicRooms);
+            var newRoom = new Room();
+
+            var roomKey = new PublicRoomKey(newRoom);
+            _publicRooms.TryAdd(roomKey, newRoom);
+
+            newRoom.Changed += HandleRoomChanged;
             return await AddUserToRoom(user, newRoom, forceAdding);
         }
 
-        public async Task<Room> RemoveUserFromRoom(User user)
+        public async Task<Room> CreatePrivateRoom(User user, Boolean forceAdding)
         {
-            var existingUserRoom = await GetRoomByUserId(user.Id);
-            existingUserRoom.removePlayer(user);
-
-            Room room;
-            _userRoomMap.TryRemove(user.Id.ToString(), out room);
+            var newRoom = new Room();
+            var room = await AddUserToRoom(user, newRoom, forceAdding);
+            _privateRooms.TryAdd(room.Guid, room);
+            room.Changed += HandleRoomChanged;
 
             return room;
+        }
+
+        public async Task RemoveUserFromRoom(User user)
+        {
+            var existingUserRoom = await GetRoomByUserId(user.Id);
+            existingUserRoom?.removePlayer(user);
+
+            _userRoomMap.TryRemove(user.Id, out _);
         }
 
         public Task<Room> GetRoomByUserId(int userId)
         {
-            var key = _userRoomMap.Keys.FirstOrDefault(k => k == userId.ToString());
-            if (key == null) return Task.FromResult<Room>(null);
-
-            Room room;
-            if (_userRoomMap.TryGetValue(key, out room)) return Task.FromResult(room);
-
-            return Task.FromResult<Room>(null);
+            return Task.FromResult(_userRoomMap.ContainsKey(userId) ? _userRoomMap[userId] : null);
         }
 
-        private Room CreateRoom(ConcurrentDictionary<RoomKey, Room> storage)
+        public Task<Room> GetPrivateRoomById(string roomId)
         {
-            var room = new Room();
-            var roomKey = new RoomKey(room.getGuid());
-
-            if (!storage.TryAdd(roomKey, room))
-            {
-                /* TODO: Throw error */
-                return null;
-            }
-
-            room.Changed += HandleRoomChanged;
-            return room;
+            var _roomId = Guid.Parse(roomId);
+            return Task.FromResult(_privateRooms.ContainsKey(_roomId) ? _privateRooms[_roomId] : null);
         }
 
-        private Room RemoveRoom(Room room, ConcurrentDictionary<RoomKey, Room> storage)
+        private Room RemoveRoom(Room room)
         {
-            var roomKey = new RoomKey(room.getGuid());
+            _publicRooms.TryRemove(new PublicRoomKey(room), out _);
+            _privateRooms.TryRemove(room.Guid, out _);
 
-            Room outRoom;
-            if (!storage.TryRemove(roomKey, out outRoom))
+            foreach (var user in room.Players)
             {
-                /* TODO: Throw error */
-                return null;
-            }
-
-            foreach (var user in outRoom.getPlayers())
-            {
-                _userRoomMap.TryRemove(user.Id.ToString(), out _);
+                _userRoomMap.TryRemove(user.Id, out _);
             };
 
-            room.Changed += HandleRoomChanged;
-            return outRoom;
+            room.Changed -= HandleRoomChanged;
+            return room;
         }
 
         private void HandleRoomChanged(object sender, RoomChangedEventArgs e)
         {
             OnChanged(new RoomChangedEventArgs(e.room));
+            if (e.room.getStateCode() == nameof(EndState)) RemoveRoom(e.room); ;
         }
     }
 }

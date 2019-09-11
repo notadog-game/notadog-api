@@ -26,7 +26,7 @@ namespace NotadogApi.Hubs
         private void HandleRoomStorageChanged(object sender, RoomChangedEventArgs e)
         {
             var room = e.room;
-            var players = room.getPlayers();
+            var players = room.Players;
             var playerIds = players.Select(p => $"{p.Id}").ToList();
 
             _hubContext.Clients.Users(playerIds).SendAsync("OnRoomUpdate", new RoomPayload(room));

@@ -36,7 +36,7 @@ namespace NotadogApi.Hubs
             }
 
             room.handleUserNotADogAction(user);
-            await Clients.Users(room.getPlayers().Select(u => $"{u.Id}").ToList()).SendAsync("OnMakedMove");
+            await Clients.Users(room.Players.Select(u => $"{u.Id}").ToList()).SendAsync("OnMakedMove");
         }
 
         public override async Task OnConnectedAsync()

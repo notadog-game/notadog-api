@@ -1,17 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using System.Linq;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 
 using NotadogApi.Security;
 using NotadogApi.Structures;
 using NotadogApi.Domain.Users.Services;
 using NotadogApi.Infrastructure;
 using NotadogApi.Domain.Game;
-using NotadogApi.Hubs;
+using NotadogApi.Models;
 
 namespace NotadogApi.Controllers
 {
@@ -37,27 +35,37 @@ namespace NotadogApi.Controllers
         /// Create game.
         /// </summary>  
         [HttpPost]
-        public async Task<IActionResult> PostAsync(Boolean forceAdding)
+        public async Task<IActionResult> PostAsync(CreatePrivateRoomRequestPayload payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var newRoom = new Room();
-            var room = await _roomStorage.AddUserToRoom(user, newRoom, forceAdding);
+            var room = await _roomStorage.CreatePrivateRoom(user, payload.ForceAdding);
 
-            if (room == null) return NotFound();
             return Ok(new RoomPayload(room));
         }
 
         /// <summary>
-        /// Connect to game.
+        /// Connect to public game.
         /// </summary>  
-        [HttpPut]
-        public async Task<IActionResult> PutAsync(Boolean forceAdding)
+        [HttpPut("public")]
+        public async Task<IActionResult> PutPublicAsync(UpdatePublicRoomRequestPayload payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.AddUserToAvailableRoom(user, forceAdding);
+            var room = await _roomStorage.AddUserToAvailableRoom(user, payload.ForceAdding);
 
-            if (room == null) return NotFound();
             return Ok(new RoomPayload(room));
+        }
+
+        /// <summary>
+        /// Connect to private game.
+        /// </summary>  
+        [HttpPut("private")]
+        public async Task<IActionResult> PutPrivateAsync(UpdatePrivateRoomRequestPayload payload)
+        {
+            var user = await _currentUserAccessor.GetCurrentUserAsync();
+            var room = await _roomStorage.GetPrivateRoomById(payload.RoomId);
+            var existedRoom = await _roomStorage.AddUserToRoom(user, room, payload.ForceAdding);
+
+            return Ok(new RoomPayload(existedRoom));
         }
     }
 

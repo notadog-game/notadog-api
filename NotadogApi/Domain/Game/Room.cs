@@ -22,17 +22,19 @@ namespace NotadogApi.Domain.Game
 
     public class Room
     {
-        private readonly System.Guid _guid;
-        private readonly List<User> _users;
+        public Guid Guid { get; }
+        public List<User> Players { get; }
+        public int PlayersMaxCount { get; }
         private IRoomState _roomState;
-        private readonly int _maxPlayersCount;
+
         public event EventHandler<RoomChangedEventArgs> Changed;
 
         public Room()
         {
-            _guid = Guid.NewGuid();
-            _users = new List<User>();
-            _maxPlayersCount = 2;
+            Guid = Guid.NewGuid();
+            Players = new List<User>();
+            PlayersMaxCount = 2;
+
             _roomState = new WaitingPlayersState(this);
         }
 
@@ -42,29 +44,14 @@ namespace NotadogApi.Domain.Game
             if (handler != null) handler(this, e);
         }
 
-        public string getGuid()
-        {
-            return this._guid.ToString();
-        }
-
         public string getStateCode()
         {
             return _roomState.getStateCode();
         }
 
-        public int getPlayersMaxCount()
-        {
-            return _maxPlayersCount;
-        }
-
         public int getPlayersCount()
         {
-            return _users.Count;
-        }
-
-        public IEnumerable<User> getPlayers()
-        {
-            return _users;
+            return Players.Count;
         }
 
         public void changeState(IRoomState state)
@@ -75,13 +62,13 @@ namespace NotadogApi.Domain.Game
 
         public void addPlayer(User user)
         {
-            _users.Add(user);
+            Players.Add(user);
             OnChanged(new RoomChangedEventArgs(this));
         }
 
         public void removePlayer(User user)
         {
-            _users.Remove(user);
+            Players.Remove(user);
             OnChanged(new RoomChangedEventArgs(this));
         }
 
