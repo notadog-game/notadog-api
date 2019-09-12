@@ -93,6 +93,7 @@ namespace NotadogApi.Domain.Game
         {
             if (RootId != user.Id) throw new Exception("");
             if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
+            if (Players.Count < 2) throw new Exception("");
 
             changeState(new WaitingStartState(this));
         }
