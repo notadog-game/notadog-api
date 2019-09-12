@@ -68,6 +68,7 @@ namespace NotadogApi.Domain.Game
         {
             // TODO: Implement exception
             if (Players.Any(player => player.Id == user.Id)) throw new Exception("");
+            if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
 
             Players.Add(user);
 
@@ -89,15 +90,15 @@ namespace NotadogApi.Domain.Game
 
         public void start(User user)
         {
-            if (RootId != user.Id) return;
-            if (_roomState.getStateCode() != nameof(WaitingPlayersState)) return;
+            if (RootId != user.Id) throw new Exception("");
+            if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
 
             changeState(new WaitingStartState(this));
         }
 
         public void handleUserNotADogAction(User user)
         {
-            if (_roomState.getStateCode() != nameof(PlayingState)) return;
+            if (_roomState.getStateCode() != nameof(PlayingState)) throw new Exception("");
 
             MakedMovePlayers.Add(user);
             _roomState.handleUserNotADogAction(user);
