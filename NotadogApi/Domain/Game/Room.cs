@@ -85,6 +85,7 @@ namespace NotadogApi.Domain.Game
         {
             var player = Players.Single(p => p.Id == user.Id);
             Players.Remove(player);
+
             OnChanged(new RoomChangedEventArgs(this));
         }
 
@@ -99,10 +100,14 @@ namespace NotadogApi.Domain.Game
         public void handleUserNotADogAction(User user)
         {
             if (_roomState.getStateCode() != nameof(PlayingState)) throw new Exception("");
+            if (Players.Count - MakedMovePlayers.Count < 2) throw new Exception("");
 
-            MakedMovePlayers.Add(user);
+            lock (MakedMovePlayers)
+            {
+                MakedMovePlayers.Add(user);
+            }
+
             _roomState.handleUserNotADogAction(user);
-
             OnChanged(new RoomChangedEventArgs(this));
         }
     }

@@ -13,7 +13,7 @@ namespace NotadogApi.Domain.Game
         Task<Room> CreatePrivateRoom(User user, Boolean forceAdding);
         Task<Room> GetPrivateRoomById(string userId);
         Task<Room> GetRoomByUserId(int userId);
-        Task RemoveUserFromRoom(User user);
+        Task RemoveUserFromRoom(User user, Room room);
     }
 }
 

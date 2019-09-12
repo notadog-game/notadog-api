@@ -16,10 +16,16 @@ namespace NotadogApi.Hubs
     struct PlayerPayload
     {
         public int Id;
+        public string Email;
+        public string Name;
+        public int Score;
 
         public PlayerPayload(User user)
         {
             Id = user.Id;
+            Email = user.Email;
+            Name = user.Name;
+            Score = user.Score;
         }
     }
 
@@ -63,6 +69,22 @@ namespace NotadogApi.Hubs
             }
 
             room.handleUserNotADogAction(user);
+        }
+
+        public async Task LeaveRoom()
+        {
+            var id = _currentUserAccessor.GetCurrentId();
+            var user = await _currentUserAccessor.GetCurrentUserAsync();
+            var room = await _roomStorage.GetRoomByUserId(id);
+
+            if (room == null)
+            {
+                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
+                return;
+            }
+
+            await _roomStorage.RemoveUserFromRoom(user, room);
+            await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
         }
 
         public override async Task OnConnectedAsync()

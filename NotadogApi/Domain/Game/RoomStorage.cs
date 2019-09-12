@@ -77,12 +77,12 @@ namespace NotadogApi.Domain.Game
             return room;
         }
 
-        public async Task RemoveUserFromRoom(User user)
+        public Task RemoveUserFromRoom(User user, Room room)
         {
-            var existingUserRoom = await GetRoomByUserId(user.Id);
-            existingUserRoom?.removePlayer(user);
-
             _userRoomMap.TryRemove(user.Id, out _);
+            room?.removePlayer(user);
+
+            return Task.CompletedTask;
         }
 
         public Task<Room> GetRoomByUserId(int userId)
