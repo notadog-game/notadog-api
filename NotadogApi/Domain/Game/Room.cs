@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using NotadogApi.Domain.Game.States;
 using NotadogApi.Domain.Users.Models;
@@ -65,6 +66,9 @@ namespace NotadogApi.Domain.Game
 
         public void addPlayer(User user)
         {
+            // TODO: Implement exception
+            if (Players.Any(player => player.Id == user.Id)) throw new Exception("");
+
             Players.Add(user);
 
             if (PlayersMaxCount > 0 && PlayersMaxCount == Players.Count)
@@ -78,7 +82,8 @@ namespace NotadogApi.Domain.Game
 
         public void removePlayer(User user)
         {
-            Players.Remove(user);
+            var player = Players.Single(p => p.Id == user.Id);
+            Players.Remove(player);
             OnChanged(new RoomChangedEventArgs(this));
         }
 

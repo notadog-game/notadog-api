@@ -47,7 +47,7 @@ namespace NotadogApi.Domain.Game
             existingUserRoom?.removePlayer(user);
 
             room.addPlayer(user);
-            _userRoomMap.AddOrUpdate(user.Id, room, (k, v) => v);
+            _userRoomMap.AddOrUpdate(user.Id, room, (k, v) => room);
 
             return room;
         }
