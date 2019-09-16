@@ -8,8 +8,10 @@ namespace NotadogApi.Domain.Game.States
     {
         public WaitingStartState(Room room) : base(room)
         {
-            // TODO: Implement random delay 3-10 sec
-            Task.Delay(3000).ContinueWith(_ =>
+            Random rnd = new Random();
+            int ms = rnd.Next(3000, 10000);
+
+            Task.Delay(ms).ContinueWith(_ =>
             {
                 _room.changeState(new PlayingState(_room));
             });

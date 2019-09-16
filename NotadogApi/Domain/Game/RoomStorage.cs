@@ -15,7 +15,7 @@ namespace NotadogApi.Domain.Game
 
         public PublicRoomKey(Room room)
         {
-            PlayersMaxCount = room.PlayersMaxCount;
+            PlayersMaxCount = room.PlayersMaxCount.Value;
         }
     }
 
@@ -68,7 +68,7 @@ namespace NotadogApi.Domain.Game
 
         public async Task<Room> CreatePrivateRoom(User user, Boolean forceAdding)
         {
-            var newRoom = new Room(0);
+            var newRoom = new Room();
             var room = await AddUserToRoom(user, newRoom, forceAdding);
             _privateRooms.TryAdd(room.Guid, newRoom);
             room.RootId = user.Id;
