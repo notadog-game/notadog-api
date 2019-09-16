@@ -58,6 +58,11 @@ namespace NotadogApi.Domain.Game
             return Players.Count;
         }
 
+        public Boolean isPublic()
+        {
+            return PlayersMaxCount.HasValue;
+        }
+
         public void changeState(IRoomState state)
         {
             lock (_roomState)
@@ -77,7 +82,7 @@ namespace NotadogApi.Domain.Game
                 if (Players.Any(player => player.Id == user.Id)) throw new Exception("");
                 Players.Add(user);
 
-                if (PlayersMaxCount == Players.Count)
+                if (isPublic() && PlayersMaxCount == Players.Count)
                 {
                     changeState(new WaitingStartState(this));
                     return;

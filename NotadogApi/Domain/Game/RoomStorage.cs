@@ -52,10 +52,10 @@ namespace NotadogApi.Domain.Game
             return room;
         }
 
-        public async Task<Room> AddUserToAvailableRoom(User user, Boolean forceAdding)
+        public async Task<Room> AddUserToAvailableRoom(User user)
         {
             var availableRoom = _publicRooms.FirstOrDefault().Value;
-            if (availableRoom != null) return await AddUserToRoom(user, availableRoom, forceAdding);
+            if (availableRoom != null) return await AddUserToRoom(user, availableRoom, false);
 
             var newRoom = new Room(2);
 
@@ -63,13 +63,13 @@ namespace NotadogApi.Domain.Game
             _publicRooms.TryAdd(roomKey, newRoom);
 
             newRoom.Changed += HandleRoomChanged;
-            return await AddUserToRoom(user, newRoom, forceAdding);
+            return await AddUserToRoom(user, newRoom, false);
         }
 
-        public async Task<Room> CreatePrivateRoom(User user, Boolean forceAdding)
+        public async Task<Room> CreatePrivateRoom(User user)
         {
             var newRoom = new Room();
-            var room = await AddUserToRoom(user, newRoom, forceAdding);
+            var room = await AddUserToRoom(user, newRoom, false);
             _privateRooms.TryAdd(room.Guid, newRoom);
             room.RootId = user.Id;
             room.Changed += HandleRoomChanged;
@@ -98,8 +98,7 @@ namespace NotadogApi.Domain.Game
 
         private Room RemoveRoom(Room room)
         {
-            _publicRooms.TryRemove(new PublicRoomKey(room), out _);
-            _privateRooms.TryRemove(room.Guid, out _);
+            TryRemoveRoom(room);
 
             foreach (var user in room.Players)
             {
@@ -117,14 +116,25 @@ namespace NotadogApi.Domain.Game
             switch (e.room.getStateCode())
             {
                 case nameof(WaitingStartState):
-                    _publicRooms.TryRemove(new PublicRoomKey(e.room), out _);
-                    _privateRooms.TryRemove(e.room.Guid, out _);
+                    TryRemoveRoom(e.room);
                     break;
                 case nameof(EndState):
                     RemoveRoom(e.room);
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void TryRemoveRoom(Room room)
+        {
+            if (room.isPublic())
+            {
+                _publicRooms.TryRemove(new PublicRoomKey(room), out _);
+            }
+            else
+            {
+                _privateRooms.TryRemove(room.Guid, out _);
             }
         }
     }
