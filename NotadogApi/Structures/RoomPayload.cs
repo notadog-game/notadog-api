@@ -18,7 +18,7 @@ namespace NotadogApi.Structures
         public RoomPayload(Room room)
         {
             Guid = room.Guid;
-            PlayersMaxCount = room.PlayersMaxCount;
+            PlayersMaxCount = room.PlayersMaxCount.Value;
             RootId = room.RootId;
             Players = room.Players;
             MakedMovePlayers = room.MakedMovePlayers;
