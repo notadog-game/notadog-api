@@ -38,7 +38,7 @@ namespace NotadogApi.Controllers
         public async Task<IActionResult> PostAsync(CreatePrivateRoomRequestPayload payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.CreatePrivateRoom(user, payload.ForceAdding);
+            var room = await _roomStorage.CreatePrivateRoom(user);
 
             return Ok(new RoomPayload(room));
         }
@@ -50,7 +50,7 @@ namespace NotadogApi.Controllers
         public async Task<IActionResult> PutPublicAsync(UpdatePublicRoomRequestPayload payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.AddUserToAvailableRoom(user, payload.ForceAdding);
+            var room = await _roomStorage.AddUserToAvailableRoom(user);
 
             return Ok(new RoomPayload(room));
         }

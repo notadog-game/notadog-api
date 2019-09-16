@@ -15,7 +15,7 @@ namespace NotadogApi.Domain.Game
 
         public PublicRoomKey(Room room)
         {
-            PlayersMaxCount = room.PlayersMaxCount;
+            PlayersMaxCount = room.PlayersMaxCount.Value;
         }
     }
 
@@ -47,41 +47,42 @@ namespace NotadogApi.Domain.Game
             existingUserRoom?.removePlayer(user);
 
             room.addPlayer(user);
-            _userRoomMap.AddOrUpdate(user.Id, room, (k, v) => v);
+            _userRoomMap.AddOrUpdate(user.Id, room, (k, v) => room);
 
             return room;
         }
 
-        public async Task<Room> AddUserToAvailableRoom(User user, Boolean forceAdding)
+        public async Task<Room> AddUserToAvailableRoom(User user)
         {
             var availableRoom = _publicRooms.FirstOrDefault().Value;
-            if (availableRoom != null) return await AddUserToRoom(user, availableRoom, forceAdding);
+            if (availableRoom != null) return await AddUserToRoom(user, availableRoom, false);
 
-            var newRoom = new Room();
+            var newRoom = new Room(2);
 
             var roomKey = new PublicRoomKey(newRoom);
             _publicRooms.TryAdd(roomKey, newRoom);
 
             newRoom.Changed += HandleRoomChanged;
-            return await AddUserToRoom(user, newRoom, forceAdding);
+            return await AddUserToRoom(user, newRoom, false);
         }
 
-        public async Task<Room> CreatePrivateRoom(User user, Boolean forceAdding)
+        public async Task<Room> CreatePrivateRoom(User user)
         {
             var newRoom = new Room();
-            var room = await AddUserToRoom(user, newRoom, forceAdding);
-            _privateRooms.TryAdd(room.Guid, room);
+            var room = await AddUserToRoom(user, newRoom, false);
+            _privateRooms.TryAdd(room.Guid, newRoom);
+            room.RootId = user.Id;
             room.Changed += HandleRoomChanged;
 
             return room;
         }
 
-        public async Task RemoveUserFromRoom(User user)
+        public Task RemoveUserFromRoom(User user, Room room)
         {
-            var existingUserRoom = await GetRoomByUserId(user.Id);
-            existingUserRoom?.removePlayer(user);
-
             _userRoomMap.TryRemove(user.Id, out _);
+            room?.removePlayer(user);
+
+            return Task.CompletedTask;
         }
 
         public Task<Room> GetRoomByUserId(int userId)
@@ -97,8 +98,7 @@ namespace NotadogApi.Domain.Game
 
         private Room RemoveRoom(Room room)
         {
-            _publicRooms.TryRemove(new PublicRoomKey(room), out _);
-            _privateRooms.TryRemove(room.Guid, out _);
+            TryRemoveRoom(room);
 
             foreach (var user in room.Players)
             {
@@ -112,7 +112,30 @@ namespace NotadogApi.Domain.Game
         private void HandleRoomChanged(object sender, RoomChangedEventArgs e)
         {
             OnChanged(new RoomChangedEventArgs(e.room));
-            if (e.room.getStateCode() == nameof(EndState)) RemoveRoom(e.room); ;
+
+            switch (e.room.getStateCode())
+            {
+                case nameof(WaitingStartState):
+                    TryRemoveRoom(e.room);
+                    break;
+                case nameof(EndState):
+                    RemoveRoom(e.room);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void TryRemoveRoom(Room room)
+        {
+            if (room.isPublic())
+            {
+                _publicRooms.TryRemove(new PublicRoomKey(room), out _);
+            }
+            else
+            {
+                _privateRooms.TryRemove(room.Guid, out _);
+            }
         }
     }
 }
