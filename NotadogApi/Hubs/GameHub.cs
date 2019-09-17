@@ -87,6 +87,20 @@ namespace NotadogApi.Hubs
             await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
         }
 
+        public async Task Refresh()
+        {
+            var id = _currentUserAccessor.GetCurrentId();
+            var room = await _roomStorage.GetRoomByUserId(id);
+
+            if (room == null)
+            {
+                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
+                return;
+            }
+
+            await Clients.User($"{id}").SendAsync("OnRoomUpdate", new RoomPayload(room));
+        }
+
         public override async Task OnConnectedAsync()
         {
             var id = _currentUserAccessor.GetCurrentId();

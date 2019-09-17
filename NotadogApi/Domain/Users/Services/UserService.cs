@@ -13,7 +13,7 @@ namespace NotadogApi.Services
 
         public UserService(IUserRepository userRepository)
         {
-            this._userRepository = userRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<User> CreateAsync(string name, string email, string password) => await _userRepository.CreateAsync(name, email, password);
