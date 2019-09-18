@@ -29,11 +29,14 @@ namespace NotadogApi.Domain.Game
         public int? PlayersMaxCount { get; }
         public int RootId { get; set; }
         private IRoomState _roomState;
+        private const int PlayersMinCout = 2;
 
         public event EventHandler<RoomChangedEventArgs> Changed;
 
         public Room(int? playersMaxCount = null)
         {
+            if (isPublic() && playersMaxCount < PlayersMinCout) throw new Exception("");
+
             Guid = Guid.NewGuid();
             Players = new List<User>();
             MakedMovePlayers = new List<User>();
@@ -108,7 +111,7 @@ namespace NotadogApi.Domain.Game
         {
             if (RootId != user.Id) throw new Exception("");
             if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
-            if (Players.Count < 2) throw new Exception("");
+            if (Players.Count < PlayersMinCout) throw new Exception("");
 
             changeState(new WaitingStartState(this));
         }
