@@ -54,7 +54,7 @@ namespace NotadogApi.Domain.Game
 
         public async Task<Room> AddUserToAvailableRoom(User user, int playersMaxCount)
         {
-            var availableRoom = _publicRooms.FirstOrDefault().Value;
+            var availableRoom = _publicRooms[new PublicRoomKey { PlayersMaxCount = playersMaxCount }];
             if (availableRoom != null) return await AddUserToRoom(user, availableRoom, false);
 
             var newRoom = new Room(playersMaxCount);
