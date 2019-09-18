@@ -7,7 +7,10 @@ namespace NotadogApi.Domain.Game.States
 {
     public class WaitingPlayersState : BaseRoomState, IRoomState
     {
-        public WaitingPlayersState(Room room) : base(room) { }
+        public WaitingPlayersState(Room room) : base(room)
+        {
+            _room.clearMakedMovePlayers();
+        }
 
         public string getStateCode()
         {

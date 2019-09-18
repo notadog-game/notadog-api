@@ -113,6 +113,8 @@ namespace NotadogApi.Domain.Game
         {
             OnChanged(new RoomChangedEventArgs(e.room));
 
+            if (!e.room.isPublic()) return;
+
             switch (e.room.getStateCode())
             {
                 case nameof(WaitingStartState):

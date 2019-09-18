@@ -113,6 +113,17 @@ namespace NotadogApi.Domain.Game
             changeState(new WaitingStartState(this));
         }
 
+        public void replay(User user)
+        {
+            if (RootId != user.Id) throw new Exception("");
+            changeState(new WaitingPlayersState(this));
+        }
+
+        public void clearMakedMovePlayers()
+        {
+            MakedMovePlayers.Clear();
+        }
+
         public void handleUserNotADogAction(User user)
         {
             lock (MakedMovePlayers)
