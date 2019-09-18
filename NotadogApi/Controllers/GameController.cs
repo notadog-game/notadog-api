@@ -50,7 +50,7 @@ namespace NotadogApi.Controllers
         public async Task<IActionResult> PutPublicAsync(UpdatePublicRoomRequestPayload payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.AddUserToAvailableRoom(user);
+            var room = await _roomStorage.AddUserToAvailableRoom(user, payload.PlayersMaxCount);
 
             return Ok(new RoomPayload(room));
         }

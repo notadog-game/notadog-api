@@ -52,12 +52,12 @@ namespace NotadogApi.Domain.Game
             return room;
         }
 
-        public async Task<Room> AddUserToAvailableRoom(User user)
+        public async Task<Room> AddUserToAvailableRoom(User user, int playersMaxCount)
         {
             var availableRoom = _publicRooms.FirstOrDefault().Value;
             if (availableRoom != null) return await AddUserToRoom(user, availableRoom, false);
 
-            var newRoom = new Room(2);
+            var newRoom = new Room(playersMaxCount);
 
             var roomKey = new PublicRoomKey(newRoom);
             _publicRooms.TryAdd(roomKey, newRoom);

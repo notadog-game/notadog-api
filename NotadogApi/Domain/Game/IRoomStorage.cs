@@ -9,7 +9,7 @@ namespace NotadogApi.Domain.Game
     {
         event EventHandler<RoomChangedEventArgs> Changed;
         Task<Room> AddUserToRoom(User user, Room room, Boolean forceAdding);
-        Task<Room> AddUserToAvailableRoom(User user);
+        Task<Room> AddUserToAvailableRoom(User user, int playersMaxCount);
         Task<Room> CreatePrivateRoom(User user);
         Task<Room> GetPrivateRoomById(string userId);
         Task<Room> GetRoomByUserId(int userId);
