@@ -96,9 +96,9 @@ namespace NotadogApi.Domain.Game
             return Task.FromResult(_privateRooms.ContainsKey(_roomId) ? _privateRooms[_roomId] : null);
         }
 
-        private Room RemoveRoom(Room room)
+        private Room DestroyRoom(Room room)
         {
-            TryRemoveRoom(room);
+            RemoveRoom(room);
 
             foreach (var user in room.Players)
             {
@@ -116,17 +116,17 @@ namespace NotadogApi.Domain.Game
             switch (e.room.getStateCode())
             {
                 case nameof(WaitingStartState):
-                    TryRemoveRoom(e.room);
+                    RemoveRoom(e.room);
                     break;
                 case nameof(EndState):
-                    RemoveRoom(e.room);
+                    DestroyRoom(e.room);
                     break;
                 default:
                     break;
             }
         }
 
-        private void TryRemoveRoom(Room room)
+        private void RemoveRoom(Room room)
         {
             if (room.isPublic())
             {
