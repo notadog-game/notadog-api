@@ -28,7 +28,9 @@ namespace NotadogApi.Domain.Contexts
             (
                 new User { Id = 1, Email = "user1", Name = "user1", Password = "user1" },
                 new User { Id = 2, Email = "user2", Name = "user2", Password = "user2" },
-                new User { Id = 3, Email = "user3", Name = "user3", Password = "user3" }
+                new User { Id = 3, Email = "user3", Name = "user3", Password = "user3" },
+                new User { Id = 4, Email = "user4", Name = "user4", Password = "user4" },
+                new User { Id = 5, Email = "user5", Name = "user5", Password = "user5" }
             );
         }
     }
