@@ -83,7 +83,7 @@ namespace NotadogApi.Hubs
                 return;
             }
 
-            await _roomStorage.RemoveUserFromRoom(user, room);
+            await _roomStorage.LeaveRoom(user);
             await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
         }
 
