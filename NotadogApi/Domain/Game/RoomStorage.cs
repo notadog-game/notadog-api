@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Timers;
 
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Game.States;
@@ -14,11 +15,18 @@ namespace NotadogApi.Domain.Game
         private ConcurrentDictionary<int, Room> _hashRoomMap;
         private ConcurrentDictionary<int, Room> _userRoomMap;
         public event EventHandler<RoomChangedEventArgs> Changed;
+        private Timer _timer;
 
         public RoomStorage()
         {
             _hashRoomMap = new ConcurrentDictionary<int, Room>();
             _userRoomMap = new ConcurrentDictionary<int, Room>();
+
+            _timer = new System.Timers.Timer();
+            _timer.Interval = 2000;
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
         }
 
         public async Task<Room> CreateRoom(User user)
@@ -79,6 +87,10 @@ namespace NotadogApi.Domain.Game
 
         private int getHashCode(int playersMaxCount, int bet) => $"{playersMaxCount}{bet}".GetHashCode();
 
+        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
+        }
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {
             EventHandler<RoomChangedEventArgs> handler = Changed;

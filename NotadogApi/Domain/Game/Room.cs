@@ -34,12 +34,12 @@ namespace NotadogApi.Domain.Game
 
         public Room(int? playersMaxCount = null)
         {
+            PlayersMaxCount = playersMaxCount;
             if (isPublic() && playersMaxCount < PlayersMinCount) throw new Exception("");
 
             Guid = Guid.NewGuid();
             Players = new List<User>();
             MakedMovePlayerIds = new List<int>();
-            PlayersMaxCount = playersMaxCount;
 
             _roomState = new WaitingPlayersState(this);
         }
