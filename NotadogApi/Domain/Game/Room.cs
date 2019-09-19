@@ -43,13 +43,17 @@ namespace NotadogApi.Domain.Game
 
             _roomState = new WaitingPlayersState(this);
         }
+
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {
             EventHandler<RoomChangedEventArgs> handler = Changed;
             if (handler != null) handler(this, e);
         }
+
         public string getStateCode() => _roomState.getStateCode();
+
         public Boolean isPublic() => PlayersMaxCount.HasValue;
+
         public void changeState(IRoomState state)
         {
             lock (_roomState)
@@ -59,6 +63,7 @@ namespace NotadogApi.Domain.Game
 
             OnChanged(new RoomChangedEventArgs(this));
         }
+
         public void addPlayer(User user)
         {
             lock (Players)
@@ -77,6 +82,7 @@ namespace NotadogApi.Domain.Game
 
             OnChanged(new RoomChangedEventArgs(this));
         }
+
         public void removePlayer(User user)
         {
             lock (Players)
@@ -88,6 +94,7 @@ namespace NotadogApi.Domain.Game
 
             OnChanged(new RoomChangedEventArgs(this));
         }
+
         public void start(User user)
         {
             if (RootId != user.Id) throw new Exception("");
@@ -96,6 +103,7 @@ namespace NotadogApi.Domain.Game
 
             changeState(new WaitingStartState(this));
         }
+
         public void handleUserNotADogAction(User user)
         {
             lock (MakedMovePlayerIds)
