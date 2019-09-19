@@ -28,7 +28,7 @@ namespace NotadogApi.Domain.Game.States
 
         public void handleUserNotADogAction(User user)
         {
-            if (_room.Players.Count - _room.MakedMovePlayers.Count < 2)
+            if (_room.Players.Count - _room.MakedMovePlayerIds.Count < 2)
             {
                 _source.Cancel();
                 _room.changeState(new EndState(_room));

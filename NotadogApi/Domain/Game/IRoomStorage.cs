@@ -16,5 +16,3 @@ namespace NotadogApi.Domain.Game
         Task<Room> GetRoomByPayload(string roomGuid);
     }
 }
-
-//TODO: think about multi getting free room

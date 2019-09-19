@@ -25,47 +25,31 @@ namespace NotadogApi.Domain.Game
     {
         public Guid Guid { get; }
         public List<User> Players { get; }
-        public List<User> MakedMovePlayers { get; }
+        public List<int> MakedMovePlayerIds { get; }
         public int? PlayersMaxCount { get; }
         public int RootId { get; set; }
         private IRoomState _roomState;
-        private const int PlayersMinCout = 2;
-
+        private const int PlayersMinCount = 2;
         public event EventHandler<RoomChangedEventArgs> Changed;
 
         public Room(int? playersMaxCount = null)
         {
-            if (isPublic() && playersMaxCount < PlayersMinCout) throw new Exception("");
+            if (isPublic() && playersMaxCount < PlayersMinCount) throw new Exception("");
 
             Guid = Guid.NewGuid();
             Players = new List<User>();
-            MakedMovePlayers = new List<User>();
+            MakedMovePlayerIds = new List<int>();
             PlayersMaxCount = playersMaxCount;
 
             _roomState = new WaitingPlayersState(this);
         }
-
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {
             EventHandler<RoomChangedEventArgs> handler = Changed;
             if (handler != null) handler(this, e);
         }
-
-        public string getStateCode()
-        {
-            return _roomState.getStateCode();
-        }
-
-        public int getPlayersCount()
-        {
-            return Players.Count;
-        }
-
-        public Boolean isPublic()
-        {
-            return PlayersMaxCount.HasValue;
-        }
-
+        public string getStateCode() => _roomState.getStateCode();
+        public Boolean isPublic() => PlayersMaxCount.HasValue;
         public void changeState(IRoomState state)
         {
             lock (_roomState)
@@ -75,7 +59,6 @@ namespace NotadogApi.Domain.Game
 
             OnChanged(new RoomChangedEventArgs(this));
         }
-
         public void addPlayer(User user)
         {
             lock (Players)
@@ -94,7 +77,6 @@ namespace NotadogApi.Domain.Game
 
             OnChanged(new RoomChangedEventArgs(this));
         }
-
         public void removePlayer(User user)
         {
             lock (Players)
@@ -106,22 +88,20 @@ namespace NotadogApi.Domain.Game
 
             OnChanged(new RoomChangedEventArgs(this));
         }
-
         public void start(User user)
         {
             if (RootId != user.Id) throw new Exception("");
             if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
-            if (Players.Count < PlayersMinCout) throw new Exception("");
+            if (Players.Count < PlayersMinCount) throw new Exception("");
 
             changeState(new WaitingStartState(this));
         }
-
         public void handleUserNotADogAction(User user)
         {
-            lock (MakedMovePlayers)
+            lock (MakedMovePlayerIds)
             {
                 if (_roomState.getStateCode() != nameof(PlayingState)) throw new Exception("");
-                MakedMovePlayers.Add(user);
+                MakedMovePlayerIds.Add(user.Id);
                 _roomState.handleUserNotADogAction(user);
             }
 
