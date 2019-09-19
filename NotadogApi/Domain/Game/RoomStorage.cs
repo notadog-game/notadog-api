@@ -89,8 +89,9 @@ namespace NotadogApi.Domain.Game
 
         private Room RemoveRoom(Room room)
         {
-            _hashRoomMap.TryRemove(getHashCode(room.Guid.ToString()), out _);
-            _hashRoomMap.TryRemove(getHashCode(room.PlayersMaxCount.Value, 0), out _);
+            var key = room.isPublic() ? getHashCode(room.PlayersMaxCount.Value, 0) : getHashCode(room.Guid.ToString());
+            _hashRoomMap.TryRemove(key, out _);
+            _hashRoomMap.TryRemove(key, out _);
 
             return room;
         }
