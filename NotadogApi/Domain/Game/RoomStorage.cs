@@ -91,7 +91,6 @@ namespace NotadogApi.Domain.Game
         {
             var key = room.isPublic() ? getHashCode(room.PlayersMaxCount.Value, 0) : getHashCode(room.Guid.ToString());
             _hashRoomMap.TryRemove(key, out _);
-            _hashRoomMap.TryRemove(key, out _);
 
             return room;
         }
