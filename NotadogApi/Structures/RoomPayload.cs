@@ -6,7 +6,7 @@ using NotadogApi.Domain.Game;
 
 namespace NotadogApi.Structures
 {
-    struct RoomPayload
+    class RoomPayload
     {
         public Guid Guid;
         public int? PlayersMaxCount;

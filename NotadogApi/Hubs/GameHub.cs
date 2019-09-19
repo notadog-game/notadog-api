@@ -43,13 +43,11 @@ namespace NotadogApi.Hubs
 
         public async Task StartGame()
         {
-            var id = _currentUserAccessor.GetCurrentId();
-            var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.GetRoomByUserId(id);
+            (User user, Room room) = await getContext();
 
             if (room == null)
             {
-                await Clients.User($"{id}").SendAsync("OnRoomUpdate", new RoomPayload(room));
+                await SendRoomPayloadAsync(null, user);
                 return;
             }
 
@@ -58,13 +56,11 @@ namespace NotadogApi.Hubs
 
         public async Task MakeMove()
         {
-            var id = _currentUserAccessor.GetCurrentId();
-            var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.GetRoomByUserId(id);
+            (User user, Room room) = await getContext();
 
             if (room == null)
             {
-                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
+                await SendRoomPayloadAsync(null, user);
                 return;
             }
 
@@ -73,72 +69,47 @@ namespace NotadogApi.Hubs
 
         public async Task LeaveRoom()
         {
-            var id = _currentUserAccessor.GetCurrentId();
-            var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.GetRoomByUserId(id);
-
-            if (room == null)
-            {
-                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
-                return;
-            }
-
+            (User user, Room room) = await getContext();
             await _roomStorage.LeaveRoom(user);
-            await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
+            await SendRoomPayloadAsync(null, user);
         }
 
         public async Task Refresh()
         {
-            var id = _currentUserAccessor.GetCurrentId();
-            var room = await _roomStorage.GetRoomByUserId(id);
-
-            if (room == null)
-            {
-                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
-                return;
-            }
-
-            await Clients.User($"{id}").SendAsync("OnRoomUpdate", new RoomPayload(room));
+            (User user, Room room) = await getContext();
+            await SendRoomPayloadAsync(room, user);
         }
 
         public async Task Replay()
         {
-            var id = _currentUserAccessor.GetCurrentId();
-            var room = await _roomStorage.GetRoomByUserId(id);
-            var user = await _currentUserAccessor.GetCurrentUserAsync();
-
-            if (room == null)
-            {
-                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
-                return;
-            }
-
-            room.replay(user);
-
-            await Clients.User($"{id}").SendAsync("OnRoomUpdate", new RoomPayload(room));
+            (User user, Room room) = await getContext();
+            room?.replay(user);
+            await SendRoomPayloadAsync(room, user);
         }
 
         public override async Task OnConnectedAsync()
         {
-            var id = _currentUserAccessor.GetCurrentId();
-            var user = await _currentUserAccessor.GetCurrentUserAsync();
-            var room = await _roomStorage.GetRoomByUserId(id);
-
-            await Clients.User($"{id}").SendAsync("OnConnect", new PlayerPayload(user));
-
-            if (room == null)
-            {
-                await Clients.User($"{id}").SendAsync("OnRoomUpdate", null);
-                return;
-            }
-
-            await Clients.User($"{id}").SendAsync("OnRoomUpdate", new RoomPayload(room));
+            (User user, Room room) = await getContext();
+            await Clients.User($"{user.Id}").SendAsync("OnConnect", new PlayerPayload(user));
+            await SendRoomPayloadAsync(room, user);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var user = await _currentUserAccessor.GetCurrentUserAsync();
+            (User user, Room room) = await getContext();
             await Clients.User($"{user.Id}").SendAsync("OnDisconnect", new PlayerPayload(user));
+        }
+
+        private Task SendRoomPayloadAsync(Room room, User user)
+        {
+            return Clients.User($"{user.Id}").SendAsync("OnRoomUpdate", room != null ? new RoomPayload(room) : null);
+        }
+
+        private async Task<(User user, Room room)> getContext()
+        {
+            var user = await _currentUserAccessor.GetCurrentUserAsync();
+            var room = await _roomStorage.GetRoomByUserId(user.Id);
+            return (user, room);
         }
     }
 }
