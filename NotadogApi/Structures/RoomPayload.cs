@@ -12,7 +12,7 @@ namespace NotadogApi.Structures
         public int? PlayersMaxCount;
         public int RootId;
         public IEnumerable<User> Players;
-        public IEnumerable<User> MakedMovePlayers;
+        public IEnumerable<int> MakedMovePlayerIds;
         public string StateCode;
 
         public RoomPayload(Room room)
@@ -21,7 +21,7 @@ namespace NotadogApi.Structures
             PlayersMaxCount = room.PlayersMaxCount;
             RootId = room.RootId;
             Players = room.Players;
-            MakedMovePlayers = room.MakedMovePlayers;
+            MakedMovePlayerIds = room.MakedMovePlayerIds;
             StateCode = room.getStateCode();
         }
     }
