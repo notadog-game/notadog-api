@@ -7,5 +7,6 @@ namespace NotadogApi.Domain.Game.States
     {
         void handleUserNotADogAction(User user);
         string getStateCode();
+        DateTime getTimestamp();
     }
 }

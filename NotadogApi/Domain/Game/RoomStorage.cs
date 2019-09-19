@@ -23,7 +23,7 @@ namespace NotadogApi.Domain.Game
             _userRoomMap = new ConcurrentDictionary<int, Room>();
 
             _timer = new System.Timers.Timer();
-            _timer.Interval = 2000;
+            _timer.Interval = 60000;
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
             _timer.Enabled = true;
@@ -75,6 +75,26 @@ namespace NotadogApi.Domain.Game
             return room;
         }
 
+        private Room DestroyRoom(Room room)
+        {
+            RemoveRoom(room);
+            foreach (var user in room.Players)
+            {
+                _userRoomMap.TryRemove(user.Id, out _);
+            };
+
+            room.Changed -= HandleRoomChanged;
+            return room;
+        }
+
+        private Room RemoveRoom(Room room)
+        {
+            _hashRoomMap.TryRemove(getHashCode(room.Guid.ToString()), out _);
+            _hashRoomMap.TryRemove(getHashCode(room.PlayersMaxCount.Value, 0), out _);
+
+            return room;
+        }
+
         public Task<Room> GetRoomByUserId(int userId) => Task.FromResult(_userRoomMap.ContainsKey(userId) ? _userRoomMap[userId] : null);
 
         private Task<Room> GetRoomByKey(int key) => Task.FromResult(_hashRoomMap.ContainsKey(key) ? _hashRoomMap[key] : null);
@@ -87,9 +107,30 @@ namespace NotadogApi.Domain.Game
 
         private int getHashCode(int playersMaxCount, int bet) => $"{playersMaxCount}{bet}".GetHashCode();
 
-        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
+
+
+            _hashRoomMap.Keys.ToList().ForEach(key =>
+            {
+                var room = _hashRoomMap[key];
+
+                var timestamp = room.getStateTimestamp();
+                var diff = e.SignalTime.Subtract(timestamp).TotalMilliseconds;
+
+                switch (room.getStateCode())
+                {
+                    case nameof(PlayingState):
+                        if (diff > 60000) room.changeState(new EndState(room));
+                        break;
+                    case (nameof(EndState)):
+                        if (diff > 60000) DestroyRoom(room);
+                        break;
+                    default:
+                        break;
+                }
+            });
         }
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {

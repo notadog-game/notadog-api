@@ -52,6 +52,8 @@ namespace NotadogApi.Domain.Game
 
         public string getStateCode() => _roomState.getStateCode();
 
+        public DateTime getStateTimestamp() => _roomState.getTimestamp();
+
         public Boolean isPublic() => PlayersMaxCount.HasValue;
 
         public void changeState(IRoomState state)
