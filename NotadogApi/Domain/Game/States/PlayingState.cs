@@ -1,8 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-
 using NotadogApi.Domain.Users.Models;
 
 namespace NotadogApi.Domain.Game.States
