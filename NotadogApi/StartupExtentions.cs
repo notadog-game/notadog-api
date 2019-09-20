@@ -6,9 +6,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-
-using NotadogApi.Hubs;
-
 using NotadogApi.Security;
 
 namespace NotadogApi
