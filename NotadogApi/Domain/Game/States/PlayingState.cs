@@ -2,21 +2,18 @@ using NotadogApi.Domain.Users.Models;
 
 namespace NotadogApi.Domain.Game.States
 {
-    public class PlayingState : BaseRoomState, IRoomState
+    public class PlayingState : BaseRoomState
     {
-        public PlayingState(Room room) : base(room) { }
-
-        public string getStateCode()
+        public PlayingState(Room room) : base(room)
         {
-            return nameof(PlayingState);
+            StateCode = nameof(PlayingState);
         }
-
-        public void handleUserNotADogAction(User user)
+        
+        public override void HandleUserNotADogAction(User user)
         {
             if (_room.Players.Count - _room.MakedMovePlayerIds.Count < 2)
-            {
-                _room.changeState(new EndState(_room));
-            }
+                _room.ChangeState(new EndState(_room));
+            
         }
     }
 }

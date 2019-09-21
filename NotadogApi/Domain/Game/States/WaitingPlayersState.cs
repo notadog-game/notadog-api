@@ -1,17 +1,11 @@
-using NotadogApi.Domain.Users.Models;
-
 namespace NotadogApi.Domain.Game.States
 {
-    public class WaitingPlayersState : BaseRoomState, IRoomState
+    public class WaitingPlayersState : BaseRoomState
     {
-        public WaitingPlayersState(Room room) : base(room) { }
-
-        public string getStateCode()
+        public WaitingPlayersState(Room room) : base(room)
         {
-            return nameof(WaitingPlayersState);
+            StateCode = nameof(WaitingPlayersState);
         }
-
-        public void handleUserNotADogAction(User user) { }
     }
 }
 

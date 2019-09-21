@@ -22,7 +22,7 @@ namespace NotadogApi.Structures
             RootId = room.RootId;
             Players = room.Players;
             MakedMovePlayerIds = room.MakedMovePlayerIds;
-            StateCode = room.getStateCode();
+            StateCode = room.GetStateCode();
         }
     }
 }

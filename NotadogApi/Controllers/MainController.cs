@@ -13,10 +13,7 @@ namespace NotadogApi.Controllers
         /// Get index.
         /// </summary>  
         [HttpGet]
-        public ActionResult<string> Get()
-        {
-            return "Notadog app API! api/v1";
-        }
+        public ActionResult<string> Get() => "Notadog app API! api/v1";
     }
 }
 

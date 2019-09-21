@@ -5,8 +5,8 @@ namespace NotadogApi.Domain.Game.States
 {
     public interface IRoomState
     {
-        void handleUserNotADogAction(User user);
-        string getStateCode();
-        DateTime getTimestamp();
+        string StateCode { get; }
+        DateTime Timestamp { get; }
+        void HandleUserNotADogAction(User user);
     }
 }

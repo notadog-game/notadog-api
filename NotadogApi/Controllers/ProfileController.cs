@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
 using NotadogApi.Security;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Users.Services;
