@@ -1,10 +1,7 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Http;
-
 using NotadogApi.Domain.Users.Services;
 using NotadogApi.Domain.Users.Models;
 
@@ -23,7 +20,7 @@ namespace NotadogApi.Infrastructure
 
         public int GetCurrentId()
         {
-            return Int32.Parse(
+            return int.Parse(
                 _httpContextAccessor
                     .HttpContext
                     .User?

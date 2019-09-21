@@ -1,7 +1,5 @@
 using System.Linq;
-
 using Microsoft.AspNetCore.SignalR;
-
 using NotadogApi.Domain.Game;
 using NotadogApi.Structures;
 
@@ -27,7 +25,7 @@ namespace NotadogApi.Hubs
         {
             var room = e.room;
             var players = room.Players;
-            var playerIds = players.Select(p => $"{p.Id}").ToList();
+            var playerIds = players.Select(p => p.Id.ToString()).ToList();
 
             await _hubContext.Clients.Users(playerIds).SendAsync("OnRoomUpdate", new RoomPayload(room));
         }

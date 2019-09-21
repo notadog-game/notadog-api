@@ -13,9 +13,7 @@ namespace NotadogApi
 
             using (var scope = host.Services.CreateScope())
             using (var context = scope.ServiceProvider.GetService<AppDbContext>())
-            {
                 context.Database.EnsureCreated();
-            }
 
             host.Run();
         }

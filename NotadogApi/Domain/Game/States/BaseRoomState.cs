@@ -1,17 +1,20 @@
 using System;
+using NotadogApi.Domain.Users.Models;
 
 namespace NotadogApi.Domain.Game.States
 {
-    public abstract class BaseRoomState
+    public abstract class BaseRoomState : IRoomState
     {
         protected readonly Room _room;
-        protected readonly DateTime _timestamp;
-        public BaseRoomState(Room room)
+        public DateTime Timestamp { get; }
+        public string StateCode { get; protected set; }
+
+        protected BaseRoomState(Room room)
         {
             _room = room;
-            _timestamp = DateTime.Now;
+            Timestamp = DateTime.Now;
         }
 
-        public DateTime getTimestamp() => _timestamp;
+        public virtual void HandleUserNotADogAction(User user) { }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-
 using NotadogApi.Domain.Game;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Infrastructure;
@@ -41,7 +40,7 @@ namespace NotadogApi.Hubs
 
         public async Task StartGame()
         {
-            (User user, Room room) = await getContext();
+            var (user, room) = await GetContext();
 
             if (room == null)
             {
@@ -49,12 +48,12 @@ namespace NotadogApi.Hubs
                 return;
             }
 
-            room.start(user);
+            room.Start(user);
         }
 
         public async Task MakeMove()
         {
-            (User user, Room room) = await getContext();
+            var(user, room) = await GetContext();
 
             if (room == null)
             {
@@ -62,39 +61,39 @@ namespace NotadogApi.Hubs
                 return;
             }
 
-            room.handleUserNotADogAction(user);
+            room.HandleUserNotADogAction(user);
         }
 
         public async Task LeaveRoom()
         {
-            (User user, Room room) = await getContext();
+            var (user, _)  = await GetContext();
             await _roomStorage.LeaveRoom(user);
             await SendRoomPayloadAsync(null, user);
         }
 
         public async Task Refresh()
         {
-            (User user, Room room) = await getContext();
+            var (user, room)  = await GetContext();
             await SendRoomPayloadAsync(room, user);
         }
 
         public async Task Replay()
         {
-            (User user, Room room) = await getContext();
-            room?.replay(user);
+            var (user, room)  = await GetContext();
+            room?.Replay(user);
             await SendRoomPayloadAsync(room, user);
         }
 
         public override async Task OnConnectedAsync()
         {
-            (User user, Room room) = await getContext();
+            var (user, room)  = await GetContext();
             await Clients.User($"{user.Id}").SendAsync("OnConnect", new PlayerPayload(user));
             await SendRoomPayloadAsync(room, user);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            (User user, Room room) = await getContext();
+            var (user, _)  = await GetContext();
             await Clients.User($"{user.Id}").SendAsync("OnDisconnect", new PlayerPayload(user));
         }
 
@@ -103,7 +102,7 @@ namespace NotadogApi.Hubs
             return Clients.User($"{user.Id}").SendAsync("OnRoomUpdate", room != null ? new RoomPayload(room) : null);
         }
 
-        private async Task<(User user, Room room)> getContext()
+        private async Task<(User user, Room room)> GetContext()
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
             var room = await _roomStorage.GetRoomByUserId(user.Id);

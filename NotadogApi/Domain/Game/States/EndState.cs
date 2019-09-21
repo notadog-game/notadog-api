@@ -1,17 +1,12 @@
-using NotadogApi.Domain.Users.Models;
-
 namespace NotadogApi.Domain.Game.States
 {
-    public class EndState : BaseRoomState, IRoomState
+    public class EndState : BaseRoomState
     {
-        public EndState(Room room) : base(room) { }
-
-        public string getStateCode()
+        public EndState(Room room) : base(room)
         {
-            return nameof(EndState);
+            StateCode = nameof(EndState);
         }
-
-        public void handleUserNotADogAction(User user) { }
+        
     }
 }
 
