@@ -1,13 +1,22 @@
-using Xunit;
+using NUnit.Framework;
 
 namespace NotadogApi.Tests
 {
+	[TestFixture]
     public class UnitTest1
-    {
-        [Fact]
-        public void Test1()
+	{
+		private bool result;
+
+		// Runs before every test.
+		[SetUp]
+	    public void SetUp()
+		{
+			result = true;
+		}
+
+	    [Test]
+        public void Mehtod_Conditions_ExpectedAction()
         {
-            var result = true;
             Assert.True(result, "result should be true");
         }
     }

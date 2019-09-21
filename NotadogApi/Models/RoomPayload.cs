@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Game;
 
-namespace NotadogApi.Structures
+namespace NotadogApi.Models
 {
     class RoomPayload
     {

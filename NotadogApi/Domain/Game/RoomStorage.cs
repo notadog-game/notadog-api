@@ -21,7 +21,7 @@ namespace NotadogApi.Domain.Game
             _hashRoomMap = new ConcurrentDictionary<int, Room>();
             _userRoomMap = new ConcurrentDictionary<int, Room>();
 
-            _timer = new System.Timers.Timer();
+            _timer = new Timer();
             _timer.Interval = 60000;
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -31,15 +31,15 @@ namespace NotadogApi.Domain.Game
         public async Task<Room> CreateRoom(User user)
         {
             var newRoom = new Room();
-            var room = await JoinRoom(user, newRoom, false);
-            _hashRoomMap.TryAdd(getHashCode(room.Guid.ToString()), newRoom);
-            room.RootId = user.Id;
-            room.Changed += HandleRoomChanged;
+            await JoinRoom(user, newRoom);
+            _hashRoomMap.TryAdd(getHashCode(newRoom.Guid.ToString()), newRoom);
+	        newRoom.RootId = user.Id;
+	        newRoom.Changed += HandleRoomChanged;
 
-            return room;
+            return newRoom;
         }
 
-        public async Task<Room> JoinRoom(User user, Room room, Boolean forceAdding)
+        public async Task<Room> JoinRoom(User user, Room room, Boolean forceAdding = false)
         {
             var existingUserRoom = await GetRoomByUserId(user.Id);
             // TODO: Create typed exception
@@ -56,13 +56,13 @@ namespace NotadogApi.Domain.Game
         {
             var key = getHashCode(playersMaxCount, 0);
             var availableRoom = _hashRoomMap.ContainsKey(key) ? _hashRoomMap[key] : null;
-            if (availableRoom != null) return await JoinRoom(user, availableRoom, false);
+            if (availableRoom != null) return await JoinRoom(user, availableRoom);
 
             var newRoom = new Room(playersMaxCount);
             _hashRoomMap.TryAdd(key, newRoom);
 
             newRoom.Changed += HandleRoomChanged;
-            return await JoinRoom(user, newRoom, false);
+            return await JoinRoom(user, newRoom);
         }
 
         public async Task<Room> LeaveRoom(User user)
@@ -106,11 +106,8 @@ namespace NotadogApi.Domain.Game
 
         private int getHashCode(int playersMaxCount, int bet) => $"{playersMaxCount}{bet}".GetHashCode();
 
-        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
-            Console.WriteLine("The Elapsed event was raised at {0}", e.SignalTime);
-
-
             _hashRoomMap.Keys.ToList().ForEach(key =>
             {
                 var room = _hashRoomMap[key];
