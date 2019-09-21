@@ -40,14 +40,10 @@ namespace NotadogApi.Controllers
             var user = await _userService.GetOneByEmailAsync(credentials.Email.Trim());
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
             if (user.Password != credentials.Password.Trim())
-            {
                 return Unauthorized();
-            }
 
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);

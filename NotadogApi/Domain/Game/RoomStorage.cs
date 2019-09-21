@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Timers;
-
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Game.States;
 
@@ -21,11 +20,8 @@ namespace NotadogApi.Domain.Game
             _hashRoomMap = new ConcurrentDictionary<int, Room>();
             _userRoomMap = new ConcurrentDictionary<int, Room>();
 
-            _timer = new Timer();
-            _timer.Interval = 60000;
+            _timer = new Timer {Interval = 60000, AutoReset = true, Enabled = true};
             _timer.Elapsed += OnTimedEvent;
-            _timer.AutoReset = true;
-            _timer.Enabled = true;
         }
 
         public async Task<Room> CreateRoom(User user)
@@ -39,14 +35,14 @@ namespace NotadogApi.Domain.Game
             return newRoom;
         }
 
-        public async Task<Room> JoinRoom(User user, Room room, Boolean forceAdding = false)
+        public async Task<Room> JoinRoom(User user, Room room, bool forceAdding = false)
         {
             var existingUserRoom = await GetRoomByUserId(user.Id);
             // TODO: Create typed exception
             if (existingUserRoom != null && !forceAdding) throw new Exception("");
-            existingUserRoom?.removePlayer(user);
+            existingUserRoom?.RemovePlayer(user);
 
-            room.addPlayer(user);
+            room.AddPlayer(user);
             _userRoomMap.AddOrUpdate(user.Id, room, (k, v) => room);
 
             return room;
@@ -69,29 +65,24 @@ namespace NotadogApi.Domain.Game
         {
             var room = await GetRoomByUserId(user.Id);
             _userRoomMap.TryRemove(user.Id, out _);
-            room?.removePlayer(user);
+            room?.RemovePlayer(user);
 
             return room;
         }
 
-        private Room DestroyRoom(Room room)
+        private void DestroyRoom(Room room)
         {
             RemoveRoom(room);
             foreach (var user in room.Players)
-            {
                 _userRoomMap.TryRemove(user.Id, out _);
-            };
 
             room.Changed -= HandleRoomChanged;
-            return room;
         }
 
-        private Room RemoveRoom(Room room)
+        private void RemoveRoom(Room room)
         {
-            var key = room.isPublic() ? getHashCode(room.PlayersMaxCount.Value, 0) : getHashCode(room.Guid.ToString());
+            var key = room.IsPublic() ? getHashCode(room.PlayersMaxCount.Value, 0) : getHashCode(room.Guid.ToString());
             _hashRoomMap.TryRemove(key, out _);
-
-            return room;
         }
 
         public Task<Room> GetRoomByUserId(int userId) => Task.FromResult(_userRoomMap.ContainsKey(userId) ? _userRoomMap[userId] : null);
@@ -106,19 +97,19 @@ namespace NotadogApi.Domain.Game
 
         private int getHashCode(int playersMaxCount, int bet) => $"{playersMaxCount}{bet}".GetHashCode();
 
-        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             _hashRoomMap.Keys.ToList().ForEach(key =>
             {
                 var room = _hashRoomMap[key];
 
-                var timestamp = room.getStateTimestamp();
+                var timestamp = room.GetStateTimestamp();
                 var diff = e.SignalTime.Subtract(timestamp).TotalMilliseconds;
 
-                switch (room.getStateCode())
+                switch (room.GetStateCode())
                 {
                     case nameof(PlayingState):
-                        if (diff > 60000) room.changeState(new EndState(room));
+                        if (diff > 60000) room.ChangeState(new EndState(room));
                         break;
                     case (nameof(EndState)):
                         if (diff > 60000) DestroyRoom(room);
@@ -128,10 +119,10 @@ namespace NotadogApi.Domain.Game
                 }
             });
         }
+
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {
-            EventHandler<RoomChangedEventArgs> handler = Changed;
-            if (handler != null) handler(this, e);
+            Changed?.Invoke(this, e);
         }
 
         private void HandleRoomChanged(object sender, RoomChangedEventArgs e)

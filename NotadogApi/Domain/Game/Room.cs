@@ -36,7 +36,7 @@ namespace NotadogApi.Domain.Game
         {
             // TODO RootId as parameter.
             PlayersMaxCount = playersMaxCount;
-            if (isPublic() && playersMaxCount < PlayersMinCount) throw new Exception("");
+            if (IsPublic() && playersMaxCount < PlayersMinCount) throw new Exception("");
 
             Guid = Guid.NewGuid();
             Players = new List<User>();
@@ -47,17 +47,16 @@ namespace NotadogApi.Domain.Game
 
         protected virtual void OnChanged(RoomChangedEventArgs e)
         {
-            EventHandler<RoomChangedEventArgs> handler = Changed;
-            if (handler != null) handler(this, e);
+            Changed?.Invoke(this, e);
         }
 
-        public string getStateCode() => _roomState.getStateCode();
+        public string GetStateCode() => _roomState.StateCode;
 
-        public DateTime getStateTimestamp() => _roomState.getTimestamp();
+        public DateTime GetStateTimestamp() => _roomState.Timestamp;
 
-        public Boolean isPublic() => PlayersMaxCount.HasValue;
+        public bool IsPublic() => PlayersMaxCount.HasValue;
 
-        public void changeState(IRoomState state)
+        public void ChangeState(IRoomState state)
         {
             lock (_roomState)
             {
@@ -67,18 +66,18 @@ namespace NotadogApi.Domain.Game
             OnChanged(new RoomChangedEventArgs(this));
         }
 
-        public void addPlayer(User user)
+        public void AddPlayer(User user)
         {
             lock (Players)
             {
                 // TODO: Implement exception
-                if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
+                if (_roomState.StateCode != nameof(WaitingPlayersState)) throw new Exception("");
                 if (Players.Any(player => player.Id == user.Id)) throw new Exception("");
                 Players.Add(user);
 
-                if (isPublic() && PlayersMaxCount == Players.Count)
+                if (IsPublic() && PlayersMaxCount == Players.Count)
                 {
-                    changeState(new WaitingStartState(this));
+                    ChangeState(new WaitingStartState(this));
                     return;
                 }
             }
@@ -86,7 +85,7 @@ namespace NotadogApi.Domain.Game
             OnChanged(new RoomChangedEventArgs(this));
         }
 
-        public void removePlayer(User user)
+        public void RemovePlayer(User user)
         {
             lock (Players)
             {
@@ -98,35 +97,35 @@ namespace NotadogApi.Domain.Game
             OnChanged(new RoomChangedEventArgs(this));
         }
 
-        public void start(User user)
+        public void Start(User user)
         {
             if (RootId != user.Id) throw new Exception("");
-            if (_roomState.getStateCode() != nameof(WaitingPlayersState)) throw new Exception("");
+            if (_roomState.StateCode != nameof(WaitingPlayersState)) throw new Exception("");
             if (Players.Count < PlayersMinCount) throw new Exception("");
 
-            changeState(new WaitingStartState(this));
+            ChangeState(new WaitingStartState(this));
         }
 
-        public void replay(User user)
+        public void Replay(User user)
         {
             if (RootId != user.Id) throw new Exception("");
-            if (_roomState.getStateCode() != nameof(EndState)) throw new Exception("");
+            if (_roomState.StateCode != nameof(EndState)) throw new Exception("");
 
             lock (MakedMovePlayerIds)
             {
                 MakedMovePlayerIds.Clear();
             }
 
-            changeState(new WaitingPlayersState(this));
+            ChangeState(new WaitingPlayersState(this));
         }
 
-        public void handleUserNotADogAction(User user)
+        public void HandleUserNotADogAction(User user)
         {
             lock (MakedMovePlayerIds)
             {
-                if (_roomState.getStateCode() != nameof(PlayingState)) throw new Exception("");
+                if (_roomState.StateCode != nameof(PlayingState)) throw new Exception("");
                 MakedMovePlayerIds.Add(user.Id);
-                _roomState.handleUserNotADogAction(user);
+                _roomState.HandleUserNotADogAction(user);
             }
 
             OnChanged(new RoomChangedEventArgs(this));

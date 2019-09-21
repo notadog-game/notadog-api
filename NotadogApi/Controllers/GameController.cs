@@ -20,12 +20,10 @@ namespace NotadogApi.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-        private readonly IUserService _userService;
         private readonly ICurrentUserAccessor _currentUserAccessor;
         private readonly IRoomStorage _roomStorage;
-        public GameController(IUserService userService, ICurrentUserAccessor currentUserAccessor, IRoomStorage roomStorage)
+        public GameController(ICurrentUserAccessor currentUserAccessor, IRoomStorage roomStorage)
         {
-            _userService = userService;
             _currentUserAccessor = currentUserAccessor;
             _roomStorage = roomStorage;
         }
