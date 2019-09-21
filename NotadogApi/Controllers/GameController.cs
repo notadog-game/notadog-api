@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 using NotadogApi.Security;
-using NotadogApi.Structures;
+using NotadogApi.Models;
 using NotadogApi.Domain.Users.Services;
 using NotadogApi.Infrastructure;
 using NotadogApi.Domain.Game;

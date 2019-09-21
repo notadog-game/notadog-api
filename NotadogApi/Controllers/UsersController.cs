@@ -37,12 +37,14 @@ namespace NotadogApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginCredentials credentials)
         {
-            var user = await _userService.GetOneByEmailAsync(credentials.Email);
+            var trimmedEmail = credentials.Email.Trim();
+            var user = await _userService.GetOneByEmailAsync(trimmedEmail);
 
             if (user == null)
                 return NotFound();
 
-            if (user.Password != credentials.Password)
+            var trimmedPassword = credentials.Password.Trim();
+            if (user.Password != trimmedPassword)
                 return Unauthorized();
 
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
@@ -55,7 +57,9 @@ namespace NotadogApi.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup(UserSignupCredentials credentials)
         {
-            var user = await _userService.CreateAsync(credentials.Name, credentials.Email, credentials.Password);
+            var trimmedEmail = credentials.Email.Trim();
+            var trimmedPassword = credentials.Password.Trim();
+            var user = await _userService.CreateAsync(credentials.Name, trimmedEmail, trimmedPassword);
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
         }

@@ -34,6 +34,7 @@ namespace NotadogApi.Domain.Game
 
         public Room(int? playersMaxCount = null)
         {
+            // TODO RootId as parameter.
             PlayersMaxCount = playersMaxCount;
             if (IsPublic() && playersMaxCount < PlayersMinCount) throw new Exception("");
 
