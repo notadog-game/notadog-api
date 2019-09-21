@@ -46,8 +46,8 @@ namespace NotadogApi.Tests.Hubs
 
 			_user = new User {Id = -7};
 			_room = new Room {RootId = _user.Id};
-			_room.addPlayer(_user);
-			_room.addPlayer(new User {Id = -34});
+			_room.AddPlayer(_user);
+			_room.AddPlayer(new User {Id = -34});
 
 			_currentUserAccessor.GetCurrentUserAsync()
 				.Returns(Task.FromResult(_user));
@@ -73,7 +73,7 @@ namespace NotadogApi.Tests.Hubs
 
 			await _gameHub.StartGame();
 			
-			Assert.AreEqual(nameof(WaitingStartState), _room.getStateCode());
+			Assert.AreEqual(nameof(WaitingStartState), _room.GetStateCode());
 		}
 	}
 }
