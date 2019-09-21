@@ -29,8 +29,8 @@ namespace NotadogApi.Domain.Game
             var newRoom = new Room();
             await JoinRoom(user, newRoom);
             _hashRoomMap.TryAdd(getHashCode(newRoom.Guid.ToString()), newRoom);
-	        newRoom.RootId = user.Id;
-	        newRoom.Changed += HandleRoomChanged;
+            newRoom.RootId = user.Id;
+            newRoom.Changed += HandleRoomChanged;
 
             return newRoom;
         }

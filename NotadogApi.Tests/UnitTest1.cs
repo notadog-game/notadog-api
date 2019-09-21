@@ -2,19 +2,19 @@ using NUnit.Framework;
 
 namespace NotadogApi.Tests
 {
-	[TestFixture]
+    [TestFixture]
     public class UnitTest1
-	{
-		private bool result;
+    {
+        private bool result;
 
-		// Runs before every test.
-		[SetUp]
-	    public void SetUp()
-		{
-			result = true;
-		}
+        // Runs before every test.
+        [SetUp]
+        public void SetUp()
+        {
+            result = true;
+        }
 
-	    [Test]
+        [Test]
         public void Mehtod_Conditions_ExpectedAction()
         {
             Assert.True(result, "result should be true");

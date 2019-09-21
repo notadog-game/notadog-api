@@ -88,7 +88,7 @@ namespace NotadogApi.Hubs
         {
             var (user, room)  = await GetContext();
             await Clients.User($"{user.Id}")
-	            .SendAsync(GameHubMethod.OnConnect.ToString(), new PlayerPayload(user));
+                .SendAsync(GameHubMethod.OnConnect.ToString(), new PlayerPayload(user));
             await SendRoomPayloadAsync(room, user);
         }
 
@@ -96,11 +96,11 @@ namespace NotadogApi.Hubs
         {
             var (user, _)  = await GetContext();
             await Clients.User($"{user.Id}")
-	            .SendAsync(GameHubMethod.OnDisconnect.ToString(), new PlayerPayload(user));
+                .SendAsync(GameHubMethod.OnDisconnect.ToString(), new PlayerPayload(user));
         }
 
         private Task SendRoomPayloadAsync(Room room, User user) => Clients.User($"{user.Id}")
-	        .SendAsync(GameHubMethod.OnRoomUpdate.ToString(), room != null ? new RoomPayload(room) : null);
+            .SendAsync(GameHubMethod.OnRoomUpdate.ToString(), room != null ? new RoomPayload(room) : null);
 
         private async Task<(User user, Room room)> GetContext()
         {

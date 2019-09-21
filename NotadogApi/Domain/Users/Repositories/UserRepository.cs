@@ -31,7 +31,7 @@ namespace NotadogApi.Domain.Users.Repositories
         public async Task<List<User>> GetAllAsync() => await _context.Users.ToListAsync();
         public async Task<User> GetOneAsync(int id) => await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
         public async Task<User> GetOneByEmailAsync(string email) =>
-	        await _context.Users.FirstOrDefaultAsync(user => user.Email.ToLower() == email.ToLower());
+            await _context.Users.FirstOrDefaultAsync(user => user.Email.ToLower() == email.ToLower());
         public async Task UpdateOneAsync(User user)
         {
             _context.Users.Update(user);
