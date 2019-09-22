@@ -11,14 +11,14 @@ namespace NotadogApi.Domain.Game
     public class RoomStorage : IRoomStorage
     {
         private ConcurrentDictionary<int, Room> _hashRoomMap;
-        private ConcurrentDictionary<int, Room> _userRoomMap;
+        private ConcurrentDictionary<string, Room> _userRoomMap;
         public event EventHandler<RoomChangedEventArgs> Changed;
         private Timer _timer;
 
         public RoomStorage()
         {
             _hashRoomMap = new ConcurrentDictionary<int, Room>();
-            _userRoomMap = new ConcurrentDictionary<int, Room>();
+            _userRoomMap = new ConcurrentDictionary<string, Room>();
 
             _timer = new Timer {Interval = 60000, AutoReset = true, Enabled = true};
             _timer.Elapsed += OnTimedEvent;
@@ -85,7 +85,7 @@ namespace NotadogApi.Domain.Game
             _hashRoomMap.TryRemove(key, out _);
         }
 
-        public Task<Room> GetRoomByUserId(int userId) => Task.FromResult(_userRoomMap.ContainsKey(userId) ? _userRoomMap[userId] : null);
+        public Task<Room> GetRoomByUserId(string userId) => Task.FromResult(_userRoomMap.ContainsKey(userId) ? _userRoomMap[userId] : null);
 
         private Task<Room> GetRoomByKey(int key) => Task.FromResult(_hashRoomMap.ContainsKey(key) ? _hashRoomMap[key] : null);
 

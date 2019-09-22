@@ -8,8 +8,8 @@ namespace NotadogApi.Domain.Users.Services
     {
         Task<User> CreateAsync(string name, string email, string password);
         Task<List<User>> GetAllAsync();
-        Task<User> GetOneAsync(int id);
+        Task<User> GetOneAsync(string id);
         Task<User> GetOneByEmailAsync(string email);
-        Task UpdateOneAsync(int id, UserUpdatePayload user);
+        Task UpdateOneAsync(string id, UserUpdatePayload user);
     }
 }

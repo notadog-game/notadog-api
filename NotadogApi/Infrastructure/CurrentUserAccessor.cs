@@ -18,16 +18,14 @@ namespace NotadogApi.Infrastructure
             _userService = userService;
         }
 
-        public int GetCurrentId()
+        public string GetCurrentId()
         {
-            return int.Parse(
-                _httpContextAccessor
-                    .HttpContext
-                    .User?
-                    .Claims?
-                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
-                    .Value
-            );
+            return _httpContextAccessor
+                .HttpContext
+                .User?
+                .Claims?
+                .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?
+                .Value;
         }
 
         public async Task<User> GetCurrentUserAsync()

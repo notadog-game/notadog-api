@@ -10,9 +10,9 @@ namespace NotadogApi.Models
     {
         public Guid Guid;
         public int? PlayersMaxCount;
-        public int RootId;
+        public string RootId;
         public IEnumerable<User> Players;
-        public IEnumerable<int> MakedMovePlayerIds;
+        public IEnumerable<string> MakedMovePlayerIds;
         public string StateCode;
 
         public RoomPayload(Room room)

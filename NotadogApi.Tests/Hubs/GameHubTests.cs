@@ -38,10 +38,10 @@ namespace NotadogApi.Tests.Hubs
                 Clients = _hubCallerClients
             };
 
-            _user = new User {Id = -7};
+            _user = new User {Id = "-7"};
             _room = new Room {RootId = _user.Id};
             _room.AddPlayer(_user);
-            _room.AddPlayer(new User {Id = -34});
+            _room.AddPlayer(new User {Id = "-34"});
 
             _currentUserAccessor.GetCurrentUserAsync()
                 .Returns(Task.FromResult(_user));

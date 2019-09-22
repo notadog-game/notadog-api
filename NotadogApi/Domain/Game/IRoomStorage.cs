@@ -12,7 +12,7 @@ namespace NotadogApi.Domain.Game
         Task<Room> JoinRoom(User user, Room room, bool forceAdding);
         Task<Room> JoinAvailableRoom(User user, int playersMaxCount);
         Task<Room> LeaveRoom(User user);
-        Task<Room> GetRoomByUserId(int userId);
+        Task<Room> GetRoomByUserId(string userId);
         Task<Room> GetRoomByPayload(string roomGuid);
     }
 }

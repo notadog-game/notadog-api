@@ -18,9 +18,9 @@ namespace NotadogApi.Services
 
         public async Task<User> CreateAsync(string name, string email, string password) => await _userRepository.CreateAsync(name, email, password);
         public async Task<List<User>> GetAllAsync() => await _userRepository.GetAllAsync();
-        public async Task<User> GetOneAsync(int id) => await _userRepository.GetOneAsync(id);
+        public async Task<User> GetOneAsync(string id) => await _userRepository.GetOneAsync(id);
         public async Task<User> GetOneByEmailAsync(string email) => await _userRepository.GetOneByEmailAsync(email);
-        public async Task UpdateOneAsync(int id, UserUpdatePayload user)
+        public async Task UpdateOneAsync(string id, UserUpdatePayload user)
         {
             var currentUser = await _userRepository.GetOneAsync(id);
 

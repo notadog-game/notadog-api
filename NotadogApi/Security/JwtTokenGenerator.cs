@@ -15,11 +15,11 @@ namespace NotadogApi.Security
             _jwtOptions = jwtOptions.Value;
         }
 
-        public async Task<string> CreateToken(int id)
+        public async Task<string> CreateToken(string id)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, id),
                 new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                 new Claim(JwtRegisteredClaimNames.Iat,
                     new DateTimeOffset(_jwtOptions.IssuedAt).ToUnixTimeSeconds().ToString(),

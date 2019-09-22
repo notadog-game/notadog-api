@@ -5,7 +5,7 @@ namespace NotadogApi.Infrastructure
 {
     public interface ICurrentUserAccessor
     {
-        int GetCurrentId();
+        string GetCurrentId();
         Task<User> GetCurrentUserAsync();
     }
 }

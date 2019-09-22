@@ -12,7 +12,7 @@ namespace NotadogApi.Hubs
 {
     public class PlayerPayload
     {
-        public int Id;
+        public string Id;
         public string Email;
         public string Name;
         public int Score;

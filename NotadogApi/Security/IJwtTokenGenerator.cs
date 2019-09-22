@@ -4,6 +4,6 @@ namespace NotadogApi.Security
 {
     public interface IJwtTokenGenerator
     {
-        Task<string> CreateToken(int id);
+        Task<string> CreateToken(string id);
     }
 }

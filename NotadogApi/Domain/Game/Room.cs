@@ -25,9 +25,9 @@ namespace NotadogApi.Domain.Game
     {
         public Guid Guid { get; }
         public List<User> Players { get; }
-        public List<int> MakedMovePlayerIds { get; }
+        public List<string> MakedMovePlayerIds { get; }
         public int? PlayersMaxCount { get; }
-        public int RootId { get; set; }
+        public string RootId { get; set; }
         private IRoomState _roomState;
         private const int PlayersMinCount = 2;
         public event EventHandler<RoomChangedEventArgs> Changed;
@@ -40,7 +40,7 @@ namespace NotadogApi.Domain.Game
 
             Guid = Guid.NewGuid();
             Players = new List<User>();
-            MakedMovePlayerIds = new List<int>();
+            MakedMovePlayerIds = new List<string>();
 
             _roomState = new WaitingPlayersState(this);
         }
