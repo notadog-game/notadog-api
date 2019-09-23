@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 
 using NotadogApi.Security;
 using NotadogApi.Models;
-using NotadogApi.Domain.Users.Services;
 using NotadogApi.Infrastructure;
 using NotadogApi.Domain.Game;
-using NotadogApi.Models;
 
 namespace NotadogApi.Controllers
 {
