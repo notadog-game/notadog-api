@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NotadogApi.Domain.Users.Repositories;
 using NotadogApi.Domain.Users.Services;
 using NotadogApi.Domain.Contexts;
@@ -71,8 +73,6 @@ namespace NotadogApi
 
             services.AddJwt();
             services.AddSignalR();
-
-
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -81,6 +81,11 @@ namespace NotadogApi
                 app.UseDeveloperExceptionPage();
             else
                 app.UseHsts();
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
