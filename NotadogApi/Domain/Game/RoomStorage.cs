@@ -5,6 +5,7 @@ using System.Linq;
 using System.Timers;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Game.States;
+using NotadogApi.Domain.Exceptions;
 
 namespace NotadogApi.Domain.Game
 {
@@ -20,7 +21,7 @@ namespace NotadogApi.Domain.Game
             _hashRoomMap = new ConcurrentDictionary<int, Room>();
             _userRoomMap = new ConcurrentDictionary<int, Room>();
 
-            _timer = new Timer {Interval = 60000, AutoReset = true, Enabled = true};
+            _timer = new Timer { Interval = 60000, AutoReset = true, Enabled = true };
             _timer.Elapsed += OnTimedEvent;
         }
 
@@ -38,8 +39,7 @@ namespace NotadogApi.Domain.Game
         public async Task<Room> JoinRoom(User user, Room room, bool forceAdding = false)
         {
             var existingUserRoom = await GetRoomByUserId(user.Id);
-            // TODO: Create typed exception
-            if (existingUserRoom != null && !forceAdding) throw new Exception("");
+            if (existingUserRoom != null && !forceAdding) throw new CommonException(ErrorCode.RoomStoragePlayerAlreadyInRoom);
             existingUserRoom?.RemovePlayer(user);
 
             room.AddPlayer(user);

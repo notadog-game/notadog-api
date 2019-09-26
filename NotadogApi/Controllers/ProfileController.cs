@@ -6,7 +6,6 @@ using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Users.Services;
 using NotadogApi.Infrastructure;
 
-
 namespace NotadogApi.Controllers
 {
     /// <summary>

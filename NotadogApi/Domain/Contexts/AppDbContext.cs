@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NotadogApi.Domain.Users.Models;
 
-
 namespace NotadogApi.Domain.Contexts
 {
     public class AppDbContext : DbContext

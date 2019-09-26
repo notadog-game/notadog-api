@@ -4,6 +4,7 @@ using System.Linq;
 
 using NotadogApi.Domain.Game.States;
 using NotadogApi.Domain.Users.Models;
+using NotadogApi.Domain.Exceptions;
 
 namespace NotadogApi.Domain.Game
 {
@@ -36,7 +37,7 @@ namespace NotadogApi.Domain.Game
         {
             // TODO RootId as parameter.
             PlayersMaxCount = playersMaxCount;
-            if (IsPublic() && playersMaxCount < PlayersMinCount) throw new Exception("");
+            if (IsPublic() && playersMaxCount < PlayersMinCount) throw new CommonException(ErrorCode.RoomPlayersMaxCountLacked);
 
             Guid = Guid.NewGuid();
             Players = new List<User>();
@@ -70,9 +71,8 @@ namespace NotadogApi.Domain.Game
         {
             lock (Players)
             {
-                // TODO: Implement exception
-                if (_roomState.StateCode != nameof(WaitingPlayersState)) throw new Exception("");
-                if (Players.Any(player => player.Id == user.Id)) throw new Exception("");
+                if (_roomState.StateCode != nameof(WaitingPlayersState)) throw new CommonException(ErrorCode.RoomNotInWaitingPlayersStateOnAddingPlayer);
+                if (Players.Any(player => player.Id == user.Id)) throw new CommonException(ErrorCode.RoomOnAddingExistingPlayer);
                 Players.Add(user);
 
                 if (IsPublic() && PlayersMaxCount == Players.Count)
@@ -90,7 +90,6 @@ namespace NotadogApi.Domain.Game
             lock (Players)
             {
                 var player = Players.FirstOrDefault(p => p.Id == user.Id);
-                if (player == null) throw new Exception("");
                 Players.Remove(player);
             }
 
@@ -99,17 +98,17 @@ namespace NotadogApi.Domain.Game
 
         public void Start(User user)
         {
-            if (RootId != user.Id) throw new Exception("");
-            if (_roomState.StateCode != nameof(WaitingPlayersState)) throw new Exception("");
-            if (Players.Count < PlayersMinCount) throw new Exception("");
+            if (RootId != user.Id) throw new CommonException(ErrorCode.RoomStartingByNonRootPlayer);
+            if (_roomState.StateCode != nameof(WaitingPlayersState)) throw new CommonException(ErrorCode.RoomStartingNotInWaitingPlayersState);
+            if (Players.Count < PlayersMinCount) throw new CommonException(ErrorCode.RoomStartingNotEnoughPlayers);
 
             ChangeState(new WaitingStartState(this));
         }
 
         public void Replay(User user)
         {
-            if (RootId != user.Id) throw new Exception("");
-            if (_roomState.StateCode != nameof(EndState)) throw new Exception("");
+            if (RootId != user.Id) throw new CommonException(ErrorCode.RoomReplayingdByNonRootPlayer);
+            if (_roomState.StateCode != nameof(EndState)) throw new CommonException(ErrorCode.RoomReplayingNotInEndPlayersState);
 
             lock (MakedMovePlayerIds)
             {
@@ -123,7 +122,7 @@ namespace NotadogApi.Domain.Game
         {
             lock (MakedMovePlayerIds)
             {
-                if (_roomState.StateCode != nameof(PlayingState)) throw new Exception("");
+                if (_roomState.StateCode != nameof(PlayingState)) throw new CommonException(ErrorCode.RoomMakeMoveNotInPlayingState);
                 MakedMovePlayerIds.Add(user.Id);
                 _roomState.HandleUserNotADogAction(user);
             }
