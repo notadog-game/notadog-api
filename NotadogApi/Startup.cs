@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ using NotadogApi.Security;
 using NotadogApi.Infrastructure;
 using NotadogApi.Hubs;
 using NotadogApi.Domain.Game;
+using NotadogApi.Domain.Exceptions;
 
 namespace NotadogApi
 {
@@ -77,15 +79,28 @@ namespace NotadogApi
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-                app.UseDeveloperExceptionPage();
-            else
+            if (!env.IsDevelopment())
                 app.UseHsts();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
+
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+                    context.Response.StatusCode = 500;
+                    context.Response.ContentType = "text/json";
+
+                    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                    var exception = exceptionHandlerPathFeature?.Error as CommonException;
+
+                    if (exception != null)
+                        await context.Response.WriteAsync(exception.Error.ToJson());
+                });
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
