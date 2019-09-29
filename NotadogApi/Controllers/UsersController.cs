@@ -6,6 +6,7 @@ using NotadogApi.Models;
 using NotadogApi.Security;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Users.Services;
+using NotadogApi.Domain.Exceptions;
 
 namespace NotadogApi.Controllers
 {
@@ -41,7 +42,7 @@ namespace NotadogApi.Controllers
             var user = await _userService.GetOneByEmailAsync(trimmedEmail);
 
             if (user == null)
-                return NotFound();
+                return NotFound(new CommonError(ErrorCode.UserNotFound));
 
             var trimmedPassword = credentials.Password.Trim();
             if (user.Password != trimmedPassword)
