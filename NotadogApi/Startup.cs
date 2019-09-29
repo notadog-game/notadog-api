@@ -92,7 +92,7 @@ namespace NotadogApi
                 errorApp.Run(async context =>
                 {
                     context.Response.StatusCode = 500;
-                    context.Response.ContentType = "text/json";
+                    context.Response.ContentType = "application/json";
 
                     var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                     var exception = exceptionHandlerPathFeature?.Error as CommonException;
