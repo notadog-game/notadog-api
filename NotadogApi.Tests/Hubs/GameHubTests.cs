@@ -45,7 +45,7 @@ namespace NotadogApi.Tests.Hubs
 
             _currentUserAccessor.GetCurrentUserAsync()
                 .Returns(Task.FromResult(_user));
-            _hubCallerClients.User(_user.Id.ToString())
+            _hubCallerClients.User(_user.Id)
                 .Returns(_clientProxy);
         }
 

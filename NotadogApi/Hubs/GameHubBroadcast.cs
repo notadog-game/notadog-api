@@ -25,11 +25,10 @@ namespace NotadogApi.Hubs
         {
             var room = e.room;
             var players = room.Players;
-            var playerIds = players.Select(p => p.Id.ToString()).ToList();
 
             await _hubContext.Clients
-                .Users(playerIds)
-                .SendAsync(GameHubMethod.OnRoomUpdate.ToString(), new RoomPayload(room));
+                .Users(players.Select(p => p.Id))
+                .SendAsync(GameHubMethod.OnRoomUpdate, new RoomPayload(room));
         }
     }
 }
