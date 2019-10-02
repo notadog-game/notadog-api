@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 
 using NotadogApi.Models;
 using NotadogApi.Security;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Users.Services;
-using NotadogApi.Domain.Exceptions;
 
 namespace NotadogApi.Controllers
 {
@@ -36,18 +36,12 @@ namespace NotadogApi.Controllers
         /// Get authentification token.
         /// </summary>  
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLoginCredentials credentials)
+        public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            var trimmedEmail = credentials.Email.Trim();
-            var user = await _userService.GetOneByEmailAsync(trimmedEmail);
+            UserLoginDtoModelValidator validator = new UserLoginDtoModelValidator(_userService);
+            await validator.ValidateAndThrowAsync(dto);
 
-            if (user == null)
-                return NotFound(new CommonError(ErrorCode.UserNotFound));
-
-            var trimmedPassword = credentials.Password.Trim();
-            if (user.Password != trimmedPassword)
-                return Unauthorized();
-
+            var user = await _userService.GetOneByEmailAsync(dto.Email);
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
         }
@@ -56,7 +50,7 @@ namespace NotadogApi.Controllers
         /// Get authentification t.
         /// </summary>  
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup(UserSignupCredentials credentials)
+        public async Task<IActionResult> Signup(UserSignupDto credentials)
         {
             var trimmedEmail = credentials.Email.Trim();
             var trimmedPassword = credentials.Password.Trim();
