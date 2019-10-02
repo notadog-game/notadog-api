@@ -4,8 +4,9 @@ namespace NotadogApi.Domain.Exceptions
     {
         UserNotFound,
         UserEmailAlreadyExist,
-        UserEmailUncorrect,
-        UserPasswordTooShort,
+        UserEmailMustNotBeEmpty,
+        UserEmailIsNotValid,
+        UserPasswordMustNotBeEmpty,
         UserAlreadyInRoom,
 
         RoomStoragePlayerAlreadyInRoom,

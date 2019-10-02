@@ -7,6 +7,7 @@ using NotadogApi.Models;
 using NotadogApi.Security;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Users.Services;
+using NotadogApi.Domain.Exceptions;
 
 namespace NotadogApi.Controllers
 {
@@ -38,10 +39,14 @@ namespace NotadogApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            UserLoginDtoModelValidator validator = new UserLoginDtoModelValidator(_userService);
-            await validator.ValidateAndThrowAsync(dto);
+            UserLoginDtoValidator userLoginDtoValidator = new UserLoginDtoValidator();
+            userLoginDtoValidator.ValidateAndThrow(dto);
 
             var user = await _userService.GetOneByEmailAsync(dto.Email);
+
+            if (user == null || user.Password != dto.Password)
+                return NotFound(new CommonError(ErrorCode.UserNotFound).ToJson());
+
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
         }

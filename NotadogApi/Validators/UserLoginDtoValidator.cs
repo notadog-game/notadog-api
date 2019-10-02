@@ -1,31 +1,38 @@
+using System;
+using System.Web;
+using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
+
 using FluentValidation;
 using NotadogApi.Models;
+using NotadogApi.Domain.Exceptions;
+using NotadogApi.Domain.Users.Models;
 
 using NotadogApi.Domain.Users.Services;
 
-public class UserLoginDtoModelValidator : AbstractValidator<UserLoginDto>
+public class UserLoginDtoValidator : AbstractValidator<UserLoginDto>
 {
-    private readonly IUserService _userService;
-
-    public UserLoginDtoModelValidator(IUserService userService)
+    public UserLoginDtoValidator()
     {
-        _userService = userService;
+        CascadeMode = CascadeMode.StopOnFirstFailure;
 
-        RuleFor(user => user.Email)
+        RuleFor(userDto => userDto.Email)
             .NotEmpty()
-            .EmailAddress()
-            .MustAsync(async (email, cancellation) =>
+            .OnFailure(dto =>
             {
-                var existingUser = await _userService.GetOneByEmailAsync(email);
-                return existingUser != null;
+                throw new CommonException(ErrorCode.UserEmailMustNotBeEmpty);
+            })
+            .EmailAddress()
+            .OnFailure(dto =>
+            {
+                throw new CommonException(ErrorCode.UserEmailIsNotValid);
             });
 
-        RuleFor(user => user.Password).NotEmpty();
-        RuleFor(user => user)
-            .MustAsync(async (user, cancellation) =>
+        RuleFor(userDto => userDto.Password)
+            .NotEmpty()
+            .OnFailure(dto =>
             {
-                var existingUser = await _userService.GetOneByEmailAsync(user.Email);
-                return existingUser.Password == user.Password;
+                throw new CommonException(ErrorCode.UserPasswordMustNotBeEmpty);
             });
     }
 }
