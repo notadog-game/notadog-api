@@ -18,11 +18,13 @@ namespace NotadogApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly ICurrentUserAccessor _currentUserAccessor;
+        private readonly UserUpdateDtoValidatorAsync _userUpdateDtoValidatorAsync;
 
-        public ProfileController(IUserService userService, ICurrentUserAccessor currentUserAccessor)
+        public ProfileController(IUserService userService, ICurrentUserAccessor currentUserAccessor, UserUpdateDtoValidatorAsync userUpdateDtoValidatorAsync)
         {
             _userService = userService;
             _currentUserAccessor = currentUserAccessor;
+            _userUpdateDtoValidatorAsync = userUpdateDtoValidatorAsync;
         }
 
         /// <summary>
@@ -41,10 +43,12 @@ namespace NotadogApi.Controllers
         /// Update Profile.
         /// </summary>  
         [HttpPut]
-        public async Task<IActionResult> PutAsync(UserUpdatePayload user)
+        public async Task<IActionResult> PutAsync(UserUpdateDto dto)
         {
+            await _userUpdateDtoValidatorAsync.ValidateAsync(dto);
+
             var id = _currentUserAccessor.GetCurrentId();
-            await _userService.UpdateOneAsync(id, user);
+            await _userService.UpdateOneAsync(id, dto);
 
             return Ok();
         }
