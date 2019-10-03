@@ -3,6 +3,7 @@ namespace NotadogApi.Domain.Exceptions
     public enum ErrorCode
     {
         UserNotFound,
+        UserNameMustNotBeEmpty,
         UserEmailAlreadyExist,
         UserEmailMustNotBeEmpty,
         UserEmailIsNotValid,

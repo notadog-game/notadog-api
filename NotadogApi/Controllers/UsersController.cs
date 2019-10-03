@@ -20,11 +20,13 @@ namespace NotadogApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private readonly UserSignupDtoValidator _userSignupDtoValidator;
 
-        public UsersController(IUserService userService, IJwtTokenGenerator jwtTokenGenerator)
+        public UsersController(IUserService userService, IJwtTokenGenerator jwtTokenGenerator, UserSignupDtoValidator userSignupDtoValidator)
         {
             _userService = userService;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _userSignupDtoValidator = userSignupDtoValidator;
         }
 
         /// <summary>
@@ -39,9 +41,6 @@ namespace NotadogApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            UserLoginDtoValidator userLoginDtoValidator = new UserLoginDtoValidator();
-            userLoginDtoValidator.ValidateAndThrow(dto);
-
             var user = await _userService.GetOneByEmailAsync(dto.Email);
 
             if (user == null || user.Password != dto.Password)
@@ -55,11 +54,11 @@ namespace NotadogApi.Controllers
         /// Get authentification t.
         /// </summary>  
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup(UserSignupDto credentials)
+        public async Task<IActionResult> Signup(UserSignupDto dto)
         {
-            var trimmedEmail = credentials.Email.Trim();
-            var trimmedPassword = credentials.Password.Trim();
-            var user = await _userService.CreateAsync(credentials.Name, trimmedEmail, trimmedPassword);
+            _userSignupDtoValidator.ValidateAndThrow(dto);
+
+            var user = await _userService.CreateAsync(dto.Name, dto.Email, dto.Password);
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
         }
