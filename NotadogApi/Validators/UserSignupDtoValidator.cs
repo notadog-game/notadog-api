@@ -8,30 +8,8 @@ public class UserSignupDtoValidator : AbstractValidator<UserSignupDto>
     {
         CascadeMode = CascadeMode.StopOnFirstFailure;
 
-        RuleFor(userDto => userDto.Name)
-            .NotEmpty()
-            .OnFailure(dto =>
-            {
-                throw new CommonException(ErrorCode.UserNameMustNotBeEmpty);
-            });
-
-        RuleFor(userDto => userDto.Email)
-            .NotEmpty()
-            .OnFailure(dto =>
-            {
-                throw new CommonException(ErrorCode.UserEmailMustNotBeEmpty);
-            })
-            .EmailAddress()
-            .OnFailure(dto =>
-            {
-                throw new CommonException(ErrorCode.UserEmailIsNotValid);
-            });
-
-        RuleFor(userDto => userDto.Password)
-            .NotEmpty()
-            .OnFailure(dto =>
-            {
-                throw new CommonException(ErrorCode.UserPasswordMustNotBeEmpty);
-            });
+        RuleFor(userDto => userDto.Name).SetValidator(new UserNameValidator());
+        RuleFor(userDto => userDto.Email).SetValidator(new UserEmailValidator());
+        RuleFor(userDto => userDto.Password).SetValidator(new UserPasswordValidator());
     }
 }
