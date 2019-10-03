@@ -6,7 +6,7 @@ using NotadogApi.Domain.Game;
 
 namespace NotadogApi.Models
 {
-    class RoomPayload
+    class RoomDto
     {
         public Guid Guid;
         public int? PlayersMaxCount;
@@ -15,7 +15,7 @@ namespace NotadogApi.Models
         public IEnumerable<int> MakedMovePlayerIds;
         public string StateCode;
 
-        public RoomPayload(Room room)
+        public RoomDto(Room room)
         {
             Guid = room.Guid;
             PlayersMaxCount = room.PlayersMaxCount;

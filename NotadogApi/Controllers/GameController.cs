@@ -30,12 +30,12 @@ namespace NotadogApi.Controllers
         /// Create game.
         /// </summary>  
         [HttpPost]
-        public async Task<IActionResult> PostAsync(CreatePrivateRoomRequestPayload payload)
+        public async Task<IActionResult> PostAsync()
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
             var room = await _roomStorage.CreateRoom(user);
 
-            return Ok(new RoomPayload(room));
+            return Ok(new RoomDto(room));
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace NotadogApi.Controllers
             var user = await _currentUserAccessor.GetCurrentUserAsync();
             var room = await _roomStorage.JoinAvailableRoom(user, payload.PlayersMaxCount);
 
-            return Ok(new RoomPayload(room));
+            return Ok(new RoomDto(room));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace NotadogApi.Controllers
             var room = await _roomStorage.GetRoomByPayload(payload.RoomId);
             var existedRoom = await _roomStorage.JoinRoom(user, room, payload.ForceAdding);
 
-            return Ok(new RoomPayload(existedRoom));
+            return Ok(new RoomDto(existedRoom));
         }
     }
 

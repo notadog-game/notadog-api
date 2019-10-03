@@ -44,7 +44,7 @@ namespace NotadogApi.Hubs
 
             if (room == null)
             {
-                await SendRoomPayloadAsync(null, user);
+                await SendRoomDtoAsync(null, user);
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace NotadogApi.Hubs
 
             if (room == null)
             {
-                await SendRoomPayloadAsync(null, user);
+                await SendRoomDtoAsync(null, user);
                 return;
             }
 
@@ -68,20 +68,20 @@ namespace NotadogApi.Hubs
         {
             var (user, _) = await GetContext();
             await _roomStorage.LeaveRoom(user);
-            await SendRoomPayloadAsync(null, user);
+            await SendRoomDtoAsync(null, user);
         }
 
         public virtual async Task Refresh()
         {
             var (user, room) = await GetContext();
-            await SendRoomPayloadAsync(room, user);
+            await SendRoomDtoAsync(room, user);
         }
 
         public virtual async Task Replay()
         {
             var (user, room) = await GetContext();
             room?.Replay(user);
-            await SendRoomPayloadAsync(room, user);
+            await SendRoomDtoAsync(room, user);
         }
 
         public override async Task OnConnectedAsync()
@@ -89,7 +89,7 @@ namespace NotadogApi.Hubs
             var (user, room) = await GetContext();
             await Clients.User(user.Id)
                 .SendAsync(GameHubMethod.OnConnect, new PlayerPayload(user));
-            await SendRoomPayloadAsync(room, user);
+            await SendRoomDtoAsync(room, user);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -99,8 +99,8 @@ namespace NotadogApi.Hubs
                 .SendAsync(GameHubMethod.OnDisconnect, new PlayerPayload(user));
         }
 
-        private Task SendRoomPayloadAsync(Room room, User user) => Clients.User(user.Id)
-            .SendAsync(GameHubMethod.OnRoomUpdate, room != null ? new RoomPayload(room) : null);
+        private Task SendRoomDtoAsync(Room room, User user) => Clients.User(user.Id)
+            .SendAsync(GameHubMethod.OnRoomUpdate, room != null ? new RoomDto(room) : null);
 
         private async Task<(User user, Room room)> GetContext()
         {
