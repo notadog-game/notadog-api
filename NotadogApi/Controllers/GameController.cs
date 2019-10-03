@@ -42,7 +42,7 @@ namespace NotadogApi.Controllers
         /// Connect to public game.
         /// </summary>  
         [HttpPut("public")]
-        public async Task<IActionResult> PutPublicAsync(UpdatePublicRoomRequestPayload payload)
+        public async Task<IActionResult> PutPublicAsync(UpdatePublicRoomDto payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
             var room = await _roomStorage.JoinAvailableRoom(user, payload.PlayersMaxCount);
@@ -54,7 +54,7 @@ namespace NotadogApi.Controllers
         /// Connect to private game.
         /// </summary>  
         [HttpPut("private")]
-        public async Task<IActionResult> PutPrivateAsync(UpdatePrivateRoomRequestPayload payload)
+        public async Task<IActionResult> PutPrivateAsync(UpdatePrivateRoomDto payload)
         {
             var user = await _currentUserAccessor.GetCurrentUserAsync();
             var room = await _roomStorage.GetRoomByPayload(payload.RoomId);
