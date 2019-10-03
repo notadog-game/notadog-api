@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 
 using NotadogApi.Models;
 using NotadogApi.Security;
@@ -19,11 +20,13 @@ namespace NotadogApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private readonly UserSignupDtoValidator _userSignupDtoValidator;
 
-        public UsersController(IUserService userService, IJwtTokenGenerator jwtTokenGenerator)
+        public UsersController(IUserService userService, IJwtTokenGenerator jwtTokenGenerator, UserSignupDtoValidator userSignupDtoValidator)
         {
             _userService = userService;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _userSignupDtoValidator = userSignupDtoValidator;
         }
 
         /// <summary>
@@ -36,17 +39,12 @@ namespace NotadogApi.Controllers
         /// Get authentification token.
         /// </summary>  
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLoginCredentials credentials)
+        public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            var trimmedEmail = credentials.Email.Trim();
-            var user = await _userService.GetOneByEmailAsync(trimmedEmail);
+            var user = await _userService.GetOneByEmailAsync(dto.Email);
 
-            if (user == null)
-                return NotFound(new CommonError(ErrorCode.UserNotFound));
-
-            var trimmedPassword = credentials.Password.Trim();
-            if (user.Password != trimmedPassword)
-                return Unauthorized();
+            if (user == null || user.Password != dto.Password)
+                return NotFound(new CommonError(ErrorCode.UserNotFound).ToJson());
 
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
@@ -56,11 +54,11 @@ namespace NotadogApi.Controllers
         /// Get authentification t.
         /// </summary>  
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup(UserSignupCredentials credentials)
+        public async Task<IActionResult> Signup(UserSignupDto dto)
         {
-            var trimmedEmail = credentials.Email.Trim();
-            var trimmedPassword = credentials.Password.Trim();
-            var user = await _userService.CreateAsync(credentials.Name, trimmedEmail, trimmedPassword);
+            _userSignupDtoValidator.ValidateAndThrow(dto);
+
+            var user = await _userService.CreateAsync(dto.Name, dto.Email, dto.Password);
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
         }
