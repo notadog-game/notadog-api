@@ -1,6 +1,6 @@
 namespace NotadogApi.Domain.Users.Models
 {
-    public class UserUpdatePayload
+    public class UserUpdateDto
     {
         public string Name { get; set; }
         public string Email { get; set; }
