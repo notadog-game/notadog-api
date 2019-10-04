@@ -1,6 +1,6 @@
 namespace NotadogApi.Models
 {
-    public class UserSignupDto : UserLoginDto
+    public class UserCreateDto : UserLoginDto
     {
         public string Name { get; set; }
     }

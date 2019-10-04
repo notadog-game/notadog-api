@@ -1,6 +1,6 @@
 namespace NotadogApi.Models
 {
-    public class UpdatePublicRoomRequestPayload
+    public class UpdatePublicRoomDto
     {
         public int PlayersMaxCount { get; set; }
     }

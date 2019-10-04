@@ -38,10 +38,10 @@ namespace NotadogApi.Tests.Hubs
                 Clients = _hubCallerClients
             };
 
-            _user = new User {Id = -7};
-            _room = new Room {RootId = _user.Id};
+            _user = new User { Id = -7 };
+            _room = new Room { RootId = _user.Id };
             _room.AddPlayer(_user);
-            _room.AddPlayer(new User {Id = -34});
+            _room.AddPlayer(new User { Id = -34 });
 
             _currentUserAccessor.GetCurrentUserAsync()
                 .Returns(Task.FromResult(_user));
@@ -50,7 +50,7 @@ namespace NotadogApi.Tests.Hubs
         }
 
         [Test]
-        public async Task StartGame_UserNotInRoom_SendNullRoomPayload()
+        public async Task StartGame_UserNotInRoom_SendNullRoomDto()
         {
             await _gameHub.StartGame();
 

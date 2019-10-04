@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using NotadogApi.Security;
 using NotadogApi.Domain.Users.Models;
 using NotadogApi.Domain.Users.Services;
+using NotadogApi.Domain.Users.Validators;
 using NotadogApi.Infrastructure;
 
 namespace NotadogApi.Controllers
@@ -18,11 +19,13 @@ namespace NotadogApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly ICurrentUserAccessor _currentUserAccessor;
+        private readonly UserUpdateValidatorAsync _userUpdateValidatorAsync;
 
-        public ProfileController(IUserService userService, ICurrentUserAccessor currentUserAccessor)
+        public ProfileController(IUserService userService, ICurrentUserAccessor currentUserAccessor, UserUpdateValidatorAsync userUpdateValidatorAsync)
         {
             _userService = userService;
             _currentUserAccessor = currentUserAccessor;
+            _userUpdateValidatorAsync = userUpdateValidatorAsync;
         }
 
         /// <summary>
@@ -41,10 +44,12 @@ namespace NotadogApi.Controllers
         /// Update Profile.
         /// </summary>  
         [HttpPut]
-        public async Task<IActionResult> PutAsync(UserUpdatePayload user)
+        public async Task<IActionResult> PutAsync(UserUpdateDto dto)
         {
+            await _userUpdateValidatorAsync.ValidateAsync(dto);
+
             var id = _currentUserAccessor.GetCurrentId();
-            await _userService.UpdateOneAsync(id, user);
+            await _userService.UpdateOneAsync(id, dto);
 
             return Ok();
         }
