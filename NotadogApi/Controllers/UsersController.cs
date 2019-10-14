@@ -21,13 +21,11 @@ namespace NotadogApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
-        private readonly UserCreateValidatorAsync _userCreateValidatorAsync;
 
-        public UsersController(IUserService userService, IJwtTokenGenerator jwtTokenGenerator, UserCreateValidatorAsync userCreateValidatorAsync)
+        public UsersController(IUserService userService, IJwtTokenGenerator jwtTokenGenerator)
         {
             _userService = userService;
             _jwtTokenGenerator = jwtTokenGenerator;
-            _userCreateValidatorAsync = userCreateValidatorAsync;
         }
 
         /// <summary>
@@ -57,8 +55,6 @@ namespace NotadogApi.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup(UserCreateDto dto)
         {
-            await _userCreateValidatorAsync.ValidateAndThrowAsync(dto);
-
             var user = await _userService.CreateAsync(dto.Name, dto.Email, dto.Password);
             var token = await _jwtTokenGenerator.CreateToken(user.Id);
             return Ok(token);
